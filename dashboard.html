@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Overview | Nexora Capital</title>
+
+    <link rel="stylesheet" href="css/style.css">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+
+</head>
+
+<body class="dashboard-body">
+
+    <div class="dashboard-layout">
+
+        <!-- SIDEBAR -->
+        <aside class="sidebar">
+
+            <a href="index.html" class="brand">
+
+                <span class="brand-icon">
+                    <i class="fa-solid fa-chart-line"></i>
+                </span>
+
+                <span>
+                    NEXORA
+                    <small>CAPITAL</small>
+                </span>
+
+            </a>
+
+            <div class="sidebar-label">WORKSPACE</div>
+
+            <nav class="sidebar-nav">
+
+                <a href="dashboard.html" class="active">
+                    <i class="fa-solid fa-grip"></i>
+                    <span>Overview</span>
+                </a>
+
+                <a href="markets.html">
+                    <i class="fa-solid fa-chart-simple"></i>
+                    <span>Markets</span>
+                </a>
+
+                <a href="portfolio.html">
+                    <i class="fa-solid fa-wallet"></i>
+                    <span>My Portfolio</span>
+                </a>
+
+                <a href="transactions.html">
+                    <i class="fa-solid fa-arrow-right-arrow-left"></i>
+                    <span>Transactions</span>
+                </a>
+
+            </nav>
+
+            <div class="sidebar-bottom">
+
+                <div class="sidebar-demo-card">
+
+                    <i class="fa-solid fa-shield-halved"></i>
+
+                    <strong>Simulation account</strong>
+
+                    <p>
+                        Explore a fictional investment portfolio.
+                        No real money or assets are involved.
+                    </p>
+
+                </div>
+
+                <button id="logoutButton" class="sidebar-logout">
+
+                    <i class="fa-solid fa-right-from-bracket"></i>
+
+                    Log out
+
+                </button>
+
+            </div>
+
+        </aside>
+
+
+        <!-- MAIN DASHBOARD -->
+        <main class="dashboard-main overview-page">
+
+            <!-- TOP BAR -->
+            <header class="dashboard-topbar">
+
+                <div>
+
+                    <p class="topbar-eyebrow">
+                        NEXORA CAPITAL / WORKSPACE
+                    </p>
+
+                    <h1>Account Overview</h1>
+
+                    <p id="dashboardDate" class="dashboard-date"></p>
+
+                </div>
+
+                <div class="topbar-user">
+
+                    <div class="topbar-user-info">
+
+                        <strong id="topbarUserName">
+                             User
+                        </strong>
+
+                        <span>Live account</span>
+
+                    </div>
+
+                    <div id="userAvatar" class="user-avatar">
+                        DU
+                    </div>
+
+                </div>
+
+            </header>
+
+
+            <!-- DEMO NOTICE -->
+            <div class="overview-demo-notice">
+
+                <i class="fa-solid fa-circle-info"></i>
+
+                <span>
+                    Live mode: balances, prices, holdings, purchase dates,
+                    transactions and performance figures are fully illustrative.
+                </span>
+
+            </div>
+
+
+            <!-- WELCOME -->
+            <section class="overview-welcome">
+
+                <div>
+
+                    <p class="section-eyebrow">
+                        YOUR FINANCIAL OVERVIEW
+                    </p>
+
+                    <h2>
+                        Welcome back,
+                        <span id="welcomeName">Investor</span>.
+                    </h2>
+
+                    <p>
+                        Here's a snapshot of your simulated investment portfolio.
+                    </p>
+
+                </div>
+
+                <a href="markets.html" class="btn btn-primary">
+
+                    Explore markets
+
+                    <i class="fa-solid fa-arrow-right"></i>
+
+                </a>
+
+            </section>
+
+
+            <!-- TOTAL PORTFOLIO VALUE -->
+            <section class="overview-balance-card">
+
+                <div class="overview-balance-content">
+
+                    <div class="overview-balance-label">
+
+                        <span class="overview-balance-dot"></span>
+
+                        TOTAL PORTFOLIO VALUE
+
+                    </div>
+
+                    <h2 id="totalPortfolioValue">
+                        $2,500,000.00
+                    </h2>
+
+                    <p>
+                        Combined available cash and asset holdings
+                    </p>
+
+                    <div class="overview-balance-actions">
+
+                        <a href="portfolio.html" class="btn btn-primary">
+                            View portfolio
+                        </a>
+
+                        <a href="markets.html" class="btn btn-secondary">
+                            Browse assets
+                        </a>
+
+                    </div>
+
+                </div>
+
+                <div class="overview-balance-decoration">
+                    <i class="fa-solid fa-chart-line"></i>
+                </div>
+
+            </section>
+
+
+            <!-- FINANCIAL SUMMARY -->
+            <section class="overview-stat-grid">
+
+                <article class="overview-stat-card">
+
+                    <div class="overview-stat-heading">
+
+                        <span>Available cash</span>
+
+                        <i class="fa-solid fa-wallet"></i>
+
+                    </div>
+
+                    <h3 id="availableCash">
+                        $350,000.00
+                    </h3>
+
+                    <p>Uninvested balance</p>
+
+                </article>
+
+
+                <article class="overview-stat-card">
+
+                    <div class="overview-stat-heading">
+
+                        <span>Invested value</span>
+
+                        <i class="fa-solid fa-layer-group"></i>
+
+                    </div>
+
+                    <h3 id="investedValue">
+                        $2,150,000.00
+                    </h3>
+
+                    <p>Current holdings value</p>
+
+                </article>
+
+
+                <article class="overview-stat-card">
+
+                    <div class="overview-stat-heading">
+
+                        <span>Unrealized P/L</span>
+
+                        <i class="fa-solid fa-arrow-trend-up"></i>
+
+                    </div>
+
+                    <h3 id="totalProfitLoss">
+                        $0.00
+                    </h3>
+
+                    <p id="profitLossNote">
+                        Portfolio return
+                    </p>
+
+                </article>
+
+            </section>
+
+
+            <!-- CHART AND ALLOCATION -->
+            <section class="overview-analysis-grid">
+
+                <!-- PORTFOLIO CHART -->
+                <article class="overview-panel performance-panel">
+
+                    <div class="overview-panel-heading">
+
+                        <div>
+
+                            <p class="section-eyebrow">
+                                PORTFOLIO ANALYTICS
+                            </p>
+
+                            <h3>Portfolio overview</h3>
+
+                        </div>
+
+                        <span class="overview-demo-tag">
+                            LIVE
+                        </span>
+
+                    </div>
+
+                    <div class="performance-summary">
+
+                        <div>
+
+                            <span>Current portfolio value</span>
+
+                            <strong id="chartPortfolioValue">
+                                $2,500,000.00
+                            </strong>
+
+                        </div>
+
+                        <div>
+
+                            <span>Open positions</span>
+
+                            <strong id="openPositionsCount">
+                                8 assets
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+                    <div class="overview-chart-container">
+
+                        <svg id="portfolioChart" viewBox="0 0 700 240" preserveAspectRatio="none" role="img"
+                            aria-label="Illustrative portfolio value visualization">
+
+                            <defs>
+
+                                <linearGradient id="overviewChartGradient" x1="0" y1="0" x2="0" y2="1">
+
+                                    <stop offset="0%" stop-color="#32d6a0" stop-opacity="0.28" />
+
+                                    <stop offset="100%" stop-color="#32d6a0" stop-opacity="0" />
+
+                                </linearGradient>
+
+                            </defs>
+
+                            <g class="overview-chart-grid">
+
+                                <line x1="0" y1="35" x2="700" y2="35"></line>
+
+                                <line x1="0" y1="90" x2="700" y2="90"></line>
+
+                                <line x1="0" y1="145" x2="700" y2="145"></line>
+
+                                <line x1="0" y1="200" x2="700" y2="200"></line>
+
+                            </g>
+
+                            <path id="portfolioChartArea" d="" fill="url(#overviewChartGradient)">
+                            </path>
+
+                            <path id="portfolioChartLine" d="" fill="none" stroke="#32d6a0" stroke-width="3"
+                                stroke-linecap="round" stroke-linejoin="round">
+                            </path>
+
+                        </svg>
+
+                    </div>
+
+                    <div class="overview-chart-labels">
+                        <span>Period start</span>
+                        <span>Current snapshot</span>
+                    </div>
+
+                    <p class="overview-chart-note">
+                        Decorative visualization only. It does not represent
+                        verified historical performance.
+                    </p>
+
+                    <!-- PORTFOLIO INSIGHTS -->
+                    <div class="portfolio-insights">
+
+                        <div class="portfolio-insights-heading">
+                            <div>
+                                <span class="section-eyebrow">PORTFOLIO INTELLIGENCE</span>
+                                <h4>Portfolio insights</h4>
+                            </div>
+
+                            <span class="overview-demo-tag">LIVE</span>
+                        </div>
+
+                        <div class="portfolio-insights-grid">
+
+                            <div class="portfolio-insight-card">
+                                <span class="insight-icon">
+                                    <i class="fa-solid fa-trophy"></i>
+                                </span>
+
+                                <div>
+                                    <small>Top holding</small>
+                                    <strong id="insightTopHolding">--</strong>
+                                    <span id="insightTopHoldingReturn">Total return</span>
+                                </div>
+                            </div>
+
+                            <div class="portfolio-insight-card">
+                                <span class="insight-icon">
+                                    <i class="fa-solid fa-money-bill-trend-up"></i>
+                                </span>
+
+                                <div>
+                                    <small>Realized gains</small>
+                                    <strong id="insightRealizedGains">$0.00</strong>
+                                    <span>From recorded sales</span>
+                                </div>
+                            </div>
+
+                            <div class="portfolio-insight-card">
+                                <span class="insight-icon">
+                                    <i class="fa-solid fa-wallet"></i>
+                                </span>
+
+                                <div>
+                                    <small>Cash allocation</small>
+                                    <strong id="insightCashAllocation">0%</strong>
+                                    <span>Of total portfolio</span>
+                                </div>
+                            </div>
+
+                            <div class="portfolio-insight-card">
+                                <span class="insight-icon">
+                                    <i class="fa-solid fa-layer-group"></i>
+                                </span>
+
+                                <div>
+                                    <small>Asset categories</small>
+                                    <strong id="insightCategoryCount">0</strong>
+                                    <span>Categories represented</span>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <p class="portfolio-insights-note">
+                            Insights are calculated from the simulated account and do not
+                            represent verified investment results.
+                        </p>
+
+                    </div>
+
+                </article>
+
+
+                <!-- ASSET ALLOCATION -->
+                <article class="overview-panel allocation-panel">
+
+                    <div class="overview-panel-heading">
+
+                        <div>
+
+                            <p class="section-eyebrow">
+                                PORTFOLIO BREAKDOWN
+                            </p>
+
+                            <h3>Asset allocation</h3>
+
+                        </div>
+
+                    </div>
+
+                    <div class="allocation-donut-container">
+
+                        <div id="allocationDonut" class="allocation-donut" role="img"
+                            aria-label="Illustrative portfolio allocation">
+
+                            <div class="allocation-donut-center">
+
+                                <span>INVESTED</span>
+
+                                <strong id="allocationTotal">
+                                    $2,150,000.00
+                                </strong>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <div id="allocationLegend" class="allocation-legend">
+
+                        <p class="allocation-empty">
+                            Loading allocation...
+                        </p>
+
+                    </div>
+
+                </article>
+
+            </section>
+
+
+            <!-- MARKET WATCH AND ACTIVITY -->
+            <section class="overview-bottom-grid">
+
+                <!-- SELECTED ASSETS -->
+                <article class="overview-panel">
+
+                    <div class="overview-panel-heading">
+
+                        <div>
+
+                            <p class="section-eyebrow">
+                                MARKET WATCH
+                            </p>
+
+                            <h3>Selected assets</h3>
+
+                        </div>
+
+                        <a href="markets.html" class="text-link">
+
+                            View markets
+
+                            <i class="fa-solid fa-arrow-right"></i>
+
+                        </a>
+
+                    </div>
+
+                    <div id="dashboardMarkets" class="overview-watchlist">
+
+                        <p class="allocation-empty">
+                            Loading selected assets...
+                        </p>
+
+                    </div>
+
+                    <p class="holdings-disclaimer">
+                        Prices and percentage changes have illustrative values.
+                    </p>
+
+                </article>
+
+
+                <!-- RECENT TRANSACTIONS -->
+                <article class="overview-panel">
+
+                    <div class="overview-panel-heading">
+
+                        <div>
+
+                            <p class="section-eyebrow">
+                                ACCOUNT ACTIVITY
+                            </p>
+
+                            <h3>Recent transactions</h3>
+
+                        </div>
+
+                        <a href="transactions.html" class="text-link">
+
+                            View all
+
+                            <i class="fa-solid fa-arrow-right"></i>
+
+                        </a>
+
+                    </div>
+
+                    <div class="table-wrap">
+
+                        <table class="data-table">
+
+                            <thead>
+
+                                <tr>
+
+                                    <th>Asset</th>
+
+                                    <th>Type</th>
+
+                                    <th>Total</th>
+
+                                    <th>Date</th>
+
+                                </tr>
+
+                            </thead>
+
+                            <tbody id="recentTransactions">
+
+                                <tr>
+
+                                    <td colspan="4">
+                                        Loading transactions...
+                                    </td>
+
+                                </tr>
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+                    <p class="holdings-disclaimer">
+                        <!-- Sample transactions are illustrative and are not actual executed trades. -->
+                    </p>
+
+                </article>
+
+            </section>
+
+
+            <!-- INVESTMENT HOLDINGS -->
+            <section class="overview-panel holdings-panel">
+
+                <div class="overview-panel-heading">
+
+                    <div>
+
+                        <span class="market-data-label">
+                            YOUR PORTFOLIO
+                        </span>
+
+                        <h2>Investment Holdings</h2>
+
+                        <p class="holdings-subtitle">
+                            Review positions, purchase dates, holding periods,
+                            average costs and returns.
+                        </p>
+
+                    </div>
+
+                    <span class="overview-demo-tag">
+                        LIVE DATA
+                    </span>
+
+                </div>
+
+
+                <!-- HOLDINGS SUMMARY -->
+                <div class="holdings-summary">
+
+                    <div>
+
+                        <span>Assets held</span>
+
+                        <strong id="holdingsAssetCount">8</strong>
+
+                    </div>
+
+                    <div>
+
+                        <span>Total cost basis</span>
+
+                        <strong id="holdingsCostBasis">$0.00</strong>
+
+                    </div>
+
+                    <div>
+
+                        <span>Current value</span>
+
+                        <strong id="holdingsCurrentValue">$0.00</strong>
+
+                    </div>
+
+                    <div>
+
+                        <span>Unrealized P/L</span>
+
+                        <strong id="holdingsProfitLoss">$0.00</strong>
+
+                    </div>
+
+                </div>
+
+
+                <!-- HOLDINGS TABLE -->
+                <div class="holdings-table-wrapper">
+
+                    <table class="holdings-table">
+
+                        <thead>
+
+                            <tr>
+
+                                <th>Investment</th>
+
+                                <th>Quantity</th>
+
+                                <th>Purchase date</th>
+
+                                <th>Holding period</th>
+
+                                <th>Average cost</th>
+
+                                <th>Current value</th>
+
+                                <th>Unrealized P/L</th>
+
+                            </tr>
+
+                        </thead>
+
+                        <tbody id="investmentHoldingsBody">
+
+                            <tr>
+
+                                <td colspan="7">
+                                    Loading portfolio holdings...
+                                </td>
+
+                            </tr>
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+                <p class="holdings-disclaimer">
+                    Fictional demonstration portfolio. Values, dates and returns
+                    do not represent verified investment performance.
+                </p>
+
+            </section>
+
+
+            <!-- FOOTER -->
+            <footer class="dashboard-footer">
+
+                <p>
+                    &copy;
+                    <span id="currentYear"></span>
+                    Nexora Capital Live.
+                </p>
+
+                <p>
+                    Simulated educational interface. Not a brokerage service.
+                </p>
+
+            </footer>
+
+        </main>
+
+    </div>
+
+
+    <!-- KEEP THESE SCRIPTS IN THIS ORDER -->
+    <script src="js/auth.js"></script>
+    <script src="js/app.js"></script>
+    <script src="js/dashboard.js"></script>
+
+</body>
+
+</html>

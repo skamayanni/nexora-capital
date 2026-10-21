@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Log In | Nexora Capital</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+    <main class="auth-page">
+
+        <div class="auth-container">
+
+            <a href="index.html" class="brand auth-logo">
+                <span class="brand-icon">
+                    <i class="fa-solid fa-chart-line"></i>
+                </span>
+
+                <span>NEXORA<span class="brand-light"> CAPITAL</span></span>
+            </a>
+
+
+            <div class="auth-card">
+
+                <span class="section-label">WELCOME BACK</span>
+
+                <h1>Log in to Nexora</h1>
+
+                <p>
+                    Access your portfolio and simulated transactions.
+                </p>
+
+
+                <div id="authMessage" class="auth-message" role="status" aria-live="polite"></div>
+
+
+                <form id="loginForm">
+
+                    <div class="form-group">
+                        <label for="loginEmail">Email address</label>
+
+                        <input type="email" id="loginEmail" name="email" placeholder="you@example.com"
+                            autocomplete="email" required>
+                    </div>
+
+
+                    <div class="form-group">
+                        <label for="loginPassword">Password</label>
+
+                        <input type="password" id="loginPassword" name="password" placeholder="Enter your password"
+                            autocomplete="current-password" required>
+                    </div>
+
+
+                    <button type="submit" class="btn btn-primary btn-block">
+
+                        Log in
+                        <i class="fa-solid fa-arrow-right"></i>
+
+                    </button>
+
+                </form>
+
+
+                <div class="auth-notice">
+
+                    <strong>SECURITY REMINDER:</strong> Never share passwords, private keys, recovery phrases or authentication codes
+                    with anyone.
+                </div>
+
+
+                <div class="auth-switch">
+                    Don't have an account?
+                    <a href="register.html">Create one</a>
+                </div>
+
+
+                <div class="auth-switch">
+                    <a href="index.html">
+                        <i class="fa-solid fa-arrow-left"></i>
+                        Back to homepage
+                    </a>
+                </div>
+
+            </div>
+
+        </div>
+
+    </main>
+
+
+    <script src="js/auth.js"></script>
+
+</body>
+
+</html>
