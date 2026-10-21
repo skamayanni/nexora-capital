@@ -4900,3 +4900,218 @@ img {
     }
 
 }
+
+
+
+
+
+/* =========================================
+   MOBILE DASHBOARD RESPONSIVENESS FIX
+========================================= */
+
+html {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
+    -webkit-text-size-adjust: 100%;
+}
+
+body.dashboard-body {
+    width: 100%;
+    max-width: 100%;
+    margin: 0;
+    overflow-x: hidden;
+}
+
+.dashboard-layout,
+.dashboard-main,
+.overview-page {
+    min-width: 0;
+    max-width: 100%;
+}
+
+.dashboard-main {
+    box-sizing: border-box;
+}
+
+.dashboard-main *,
+.dashboard-main *::before,
+.dashboard-main *::after {
+    box-sizing: border-box;
+}
+
+@media (max-width: 768px) {
+
+    body.dashboard-body {
+        overflow-x: hidden;
+    }
+
+    .dashboard-layout {
+        display: block;
+        width: 100%;
+        max-width: 100%;
+    }
+
+    .dashboard-main {
+        width: 100%;
+        min-width: 0;
+        padding-left: 16px;
+        padding-right: 16px;
+    }
+
+    /* Prevent tables from stretching the entire page */
+    .table-wrap,
+    .holdings-table-wrapper {
+        width: 100%;
+        max-width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .data-table,
+    .holdings-table {
+        min-width: 600px;
+    }
+
+    /* Keep dashboard cards inside the screen */
+    .overview-stat-grid,
+    .overview-analysis-grid,
+    .overview-bottom-grid {
+        min-width: 0;
+        max-width: 100%;
+    }
+
+    .overview-panel,
+    .overview-stat-card,
+    .overview-balance-card {
+        min-width: 0;
+        max-width: 100%;
+    }
+
+    /* Prevent long financial figures from stretching cards */
+    .overview-stat-card h3,
+    #totalPortfolioValue,
+    #availableCash,
+    #investedValue,
+    #totalProfitLoss {
+        overflow-wrap: anywhere;
+    }
+
+    /* Keep form fields from triggering browser zoom */
+    input,
+    select,
+    textarea {
+        font-size: 16px;
+    }
+}
+
+
+/* ========================================
+   MOBILE ZOOM AND OVERFLOW FIX
+   ======================================== */
+
+html {
+    width: 100%;
+    max-width: 100%;
+    -webkit-text-size-adjust: 100%;
+}
+
+body {
+    width: 100%;
+    max-width: 100%;
+    margin: 0;
+}
+
+/* Ensure padding doesn't increase element width */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+/* Prevent main layout containers from forcing a wide page */
+.container,
+.main-content,
+.page-content,
+.markets-container,
+.markets-content,
+.dashboard-layout,
+.dashboard-main {
+    min-width: 0;
+    max-width: 100%;
+}
+
+/* Mobile layout */
+@media screen and (max-width: 768px) {
+
+    html,
+    body {
+        width: 100%;
+        max-width: 100%;
+        overflow-x: hidden;
+    }
+
+    .container,
+    .main-content,
+    .page-content,
+    .markets-container,
+    .markets-content {
+        width: 100%;
+        min-width: 0;
+        max-width: 100%;
+    }
+
+    /* Keep headings and descriptions inside the screen */
+    h1,
+    h2,
+    h3,
+    p {
+        overflow-wrap: anywhere;
+    }
+
+    /* Prevent form fields from triggering automatic iPhone zoom */
+    input,
+    select,
+    textarea {
+        font-size: 16px;
+    }
+
+    /* Allow market tables to scroll independently */
+    .markets-table-wrapper,
+    .table-wrapper,
+    .table-wrap {
+        width: 100%;
+        max-width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    /* Keep wide tables readable without expanding the page */
+    .markets-table,
+    .data-table {
+        min-width: 600px;
+    }
+
+    /* Make market cards adapt to narrow screens */
+    .markets-grid,
+    .market-cards,
+    .market-grid {
+        grid-template-columns: minmax(0, 1fr);
+        width: 100%;
+        min-width: 0;
+    }
+
+    /* Prevent flex and grid children from forcing page width */
+    .market-card,
+    .market-item,
+    .market-row {
+        min-width: 0;
+        max-width: 100%;
+    }
+
+    img,
+    video,
+    iframe {
+        max-width: 100%;
+    }
+}
