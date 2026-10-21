@@ -1309,6 +1309,12 @@ img {
     font-size: 13px;
 }
 
+.auth-card input,
+.auth-card select,
+.auth-card textarea {
+    font-size: 16px;
+}
+
 .form-group {
     margin-bottom: 18px;
 }
