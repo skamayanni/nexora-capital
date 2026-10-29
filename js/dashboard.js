@@ -714,204 +714,31 @@ function renderDashboardHoldings() {
 
 
 function renderInvestmentHoldings() {
-
-    const tableBody =
-        document.getElementById("investmentHoldingsBody");
-
-    if (!tableBody) {
-        return;
+    const active = dashboardRecordedAllocations.filter(item => item.status === 'recorded');
+    const allocated = Number(dashboardPortfolio.allocatedBalance) || 0;
+    const total = Number(dashboardPortfolio.totalRecordedBalance);
+    const summary = {
+        holdingsAssetCount: new Set(active.map(item => item.symbol)).size,
+        holdingsCostBasis: formatMoney(allocated),
+        holdingsCurrentValue: formatMoney(Number.isFinite(total) ? total : (Number(dashboardPortfolio.cashBalance) || 0) + allocated),
+        holdingsProfitLoss: '—'
+    };
+    for (const [id, value] of Object.entries(summary)) {
+        const element = document.getElementById(id);
+        if (element) element.textContent = value;
     }
-
-    const holdings = dashboardPortfolio.holdings
-        .map(holding => {
-
-            const asset = getDemoAsset(holding.symbol);
-
-            if (!asset) {
-                return null;
-            }
-
-            const currentValue = getHoldingValue(holding);
-
-            const costBasis = getHoldingCost(holding);
-
-            const profitLoss = currentValue - costBasis;
-
-            const profitPercentage = costBasis > 0
-                ? (profitLoss / costBasis) * 100
-                : 0;
-
-            return {
-
-                ...holding,
-                asset,
-                currentValue,
-                costBasis,
-                profitLoss,
-                profitPercentage
-
-            };
-
-        })
-        .filter(Boolean)
-        .sort((a, b) => b.currentValue - a.currentValue);
-
-    const totalCostBasis = holdings.reduce(
-        (sum, holding) => sum + holding.costBasis,
-        0
-    );
-
-    const totalCurrentValue = holdings.reduce(
-        (sum, holding) => sum + holding.currentValue,
-        0
-    );
-
-    const totalProfitLoss = totalCurrentValue - totalCostBasis;
-
-    const countElement =
-        document.getElementById("holdingsAssetCount");
-
-    const costElement =
-        document.getElementById("holdingsCostBasis");
-
-    const valueElement =
-        document.getElementById("holdingsCurrentValue");
-
-    const profitElement =
-        document.getElementById("holdingsProfitLoss");
-
-    if (countElement) {
-        countElement.textContent = holdings.length;
-    }
-
-    if (costElement) {
-        costElement.textContent = formatMoney(totalCostBasis);
-    }
-
-    if (valueElement) {
-        valueElement.textContent = formatMoney(totalCurrentValue);
-    }
-
-    if (profitElement) {
-
-        profitElement.textContent = formatMoney(totalProfitLoss);
-
-        profitElement.classList.toggle(
-            "positive",
-            totalProfitLoss > 0
-        );
-
-        profitElement.classList.toggle(
-            "negative",
-            totalProfitLoss < 0
-        );
-
-    }
-
-    if (!holdings.length) {
-
-        tableBody.innerHTML = `
-
-            <tr>
-                <td colspan="7" class="holdings-empty">
-                    No open positions are available.
-                </td>
-            </tr>
-
-        `;
-
-        return;
-    }
-
-    tableBody.innerHTML = holdings.map(holding => {
-
-        const profitClass = holding.profitLoss >= 0
-            ? "positive"
-            : "negative";
-
-        const sign = holding.profitLoss > 0
-            ? "+"
-            : "";
-
-        return `
-
-            <tr>
-
-                <td>
-
-                    <div class="table-asset">
-
-                        <span class="asset-icon ${escapeDashboardHTML(holding.asset.iconClass)}">
-                            <i class="${escapeDashboardHTML(holding.asset.icon)}"></i>
-                        </span>
-
-                        <span>
-
-                            <strong>
-                                ${escapeDashboardHTML(holding.asset.name)}
-                            </strong>
-
-                            <small>
-                                ${escapeDashboardHTML(holding.symbol)}
-                            </small>
-
-                        </span>
-
-                    </div>
-
-                </td>
-
-                <td>
-                    ${formatQuantity(holding.quantity)}
-                </td>
-
-                <td>
-                    ${formatPurchaseDate(holding.firstPurchaseDate)}
-                </td>
-
-                <td>
-
-                    <span class="holding-duration">
-                        ${escapeDashboardHTML(
-            formatHoldingPeriod(holding.firstPurchaseDate)
-        )}
-                    </span>
-
-                </td>
-
-                <td>
-                    ${formatMoney(holding.averagePrice)}
-                </td>
-
-                <td>
-                    <strong>${formatMoney(holding.currentValue)}</strong>
-                </td>
-
-                <td>
-
-                    <strong class="${profitClass}">
-                        ${sign}${formatMoney(holding.profitLoss)}
-                    </strong>
-
-                    <small class="${profitClass} holding-return">
-                        ${holding.profitPercentage >= 0 ? "+" : ""}
-                        ${holding.profitPercentage.toFixed(2)}%
-                    </small>
-
-                </td>
-
-            </tr>
-
-        `;
-
-    }).join("");
-
+    const tableBody = document.getElementById('investmentHoldingsBody');
+    if (!tableBody) return;
+    tableBody.innerHTML = active.length ? active.map(item => `
+        <tr>
+            <td><strong>${escapeDashboardHTML(item.name)}</strong> <small>${escapeDashboardHTML(item.symbol)}</small></td>
+            <td>${formatMoney(item.amount)}</td>
+            <td>${formatPurchaseDate(item.createdAt)}</td>
+            <td>${escapeDashboardHTML(formatHoldingPeriod(item.createdAt))}</td>
+        </tr>
+    `).join('') : '<tr><td colspan="4" class="holdings-empty">No allocations yet.</td></tr>';
 }
 
-
-// =======================================================
-// ILLUSTRATIVE PORTFOLIO CHART
-// =======================================================
 
 function renderPortfolioChart() {
     const chart = document.getElementById('portfolioChart');
