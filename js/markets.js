@@ -211,7 +211,7 @@ function renderMarketsTable() {
                         class="small-action-button"
                         data-market-buy="${escapeDashboardHTML(asset.symbol)}"
                     >
-                        Trade Live
+                        Trading unavailable
                     </button>
                 </td>
 
@@ -220,7 +220,7 @@ function renderMarketsTable() {
     }).join("");
 
     resultCount.textContent =
-        `Showing ${assets.length} of ${NEXORA_MARKETS.length} live assets`;
+        `Showing ${assets.length} of ${NEXORA_MARKETS.length} illustrative assets`;
 
     // Attach the simulated trading modal to each asset.
     tableBody.querySelectorAll("[data-market-buy]").forEach(button => {
@@ -307,7 +307,7 @@ function initializeMarketSearch() {
 // MARKETS PAGE INITIALIZATION
 // ================================================
 
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("account-ready", () => {
     /*
     dashboard.js initializes the logged-in account,
     portfolio, demo prices, and trade modal.
@@ -339,134 +339,4 @@ document.addEventListener("DOMContentLoaded", () => {
 
         renderMarketsTable();
     };
-});
-
-
-/* ==========================================
-NEXORA CAPITAL — DEMO PAYMENT OPTIONS
-========================================== */
-
-document.addEventListener("DOMContentLoaded", function () {
-    const paymentModal = document.getElementById("paymentOptionsModal");
-    const closeButton = document.getElementById("paymentModalClose");
-    const paymentInstructions = document.getElementById("paymentInstructions");
-    const paymentInstructionsTitle = document.getElementById("paymentInstructionsTitle");
-    const paymentInstructionsDescription = document.getElementById("paymentInstructionsDescription");
-    const paymentDemoConfirm = document.getElementById("paymentDemoConfirm");
-
-
-    if (!paymentModal) return;
-
-    let selectedPaymentMethod = "";
-
-    function openPaymentOptions() {
-        const assetSymbol = document.getElementById("tradeAssetSymbol");
-        const quantityInput = document.getElementById("tradeQuantity");
-
-        const symbol = assetSymbol?.textContent?.trim() || "";
-        const quantity = Number(quantityInput?.value || 0);
-
-        const asset = typeof getDemoAsset === "function"
-            ? getDemoAsset(symbol)
-            : null;
-
-        const assetName = asset
-            ? `${asset.name} (${asset.symbol})`
-            : (symbol || "Selected asset");
-
-        const purchaseAmount = asset && Number.isFinite(quantity) && quantity > 0
-            ? asset.price * quantity
-            : 0;
-
-        document.getElementById("paymentAssetName").textContent = assetName;
-        document.getElementById("paymentPurchaseAmount").textContent =
-            typeof formatMoney === "function"
-                ? formatMoney(purchaseAmount)
-                : `$${purchaseAmount.toFixed(2)}`;
-
-        paymentInstructions.hidden = true;
-        selectedPaymentMethod = "";
-
-        paymentModal.classList.add("active");
-        paymentModal.setAttribute("aria-hidden", "false");
-    }
-
-    function closePaymentOptions() {
-        paymentModal.classList.remove("active");
-        paymentModal.setAttribute("aria-hidden", "true");
-    }
-
-    /*
-       Intercept the existing demo purchase confirmation.
-       This opens the payment choices instead of immediately
-       submitting the purchase.
-    */
-    // Open payment options only when the user confirms the demo purchase.
-    const tradeForm = document.getElementById("tradeForm");
-
-    if (tradeForm) {
-        tradeForm.addEventListener("submit", function (event) {
-            event.preventDefault();
-            event.stopImmediatePropagation();
-
-            openPaymentOptions();
-        }, true);
-    }
-
-
-    document.querySelectorAll("[data-payment-method]").forEach(function (button) {
-        button.addEventListener("click", function () {
-            selectedPaymentMethod = button.dataset.paymentMethod;
-
-            paymentInstructions.hidden = false;
-
-            if (selectedPaymentMethod === "crypto") {
-                paymentInstructionsTitle.textContent = "Cryptocurrency";
-                paymentInstructionsDescription.textContent =
-                    "In a live service, this section would display verified payment instructions from the payment provider. No wallet address or transfer is required in this demonstration.";
-            } else {
-                paymentInstructionsTitle.textContent = "Bank Transfer";
-                paymentInstructionsDescription.textContent =
-                    "In a live service, this section would display verified bank payment instructions from the payment provider. No bank transfer is required in this demonstration.";
-            }
-
-            paymentInstructions.scrollIntoView({
-                behavior: "smooth",
-                block: "nearest"
-            });
-        });
-    });
-
-    if (closeButton) {
-        closeButton.addEventListener("click", closePaymentOptions);
-    }
-
-    paymentModal.addEventListener("click", function (event) {
-        if (event.target === paymentModal) {
-            closePaymentOptions();
-        }
-    });
-
-    if (paymentDemoConfirm) {
-        paymentDemoConfirm.addEventListener("click", function () {
-            if (!selectedPaymentMethod) {
-                alert("Please choose a payment method first.");
-                return;
-            }
-
-            closePaymentOptions();
-
-            alert(
-                "Demo checkout complete. No payment was collected and no real transaction was made."
-            );
-        });
-    }
-
-    document.addEventListener("keydown", function (event) {
-        if (event.key === "Escape") {
-            closePaymentOptions();
-        }
-    });
-
-
 });

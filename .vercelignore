@@ -1,0 +1,11 @@
+.git/
+.data/
+.env
+.env.*
+node_modules/
+server/
+test/
+docs/
+README.md
+render.yaml
+*.log

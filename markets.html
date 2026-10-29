@@ -154,6 +154,7 @@
             <div class="sidebar-label">WORKSPACE</div>
 
             <nav class="sidebar-nav">
+                <a href="profile.html">Profile</a>
 
                 <a href="dashboard.html">
                     <i class="fa-solid fa-grip"></i>
@@ -182,11 +183,10 @@
                 <div class="sidebar-demo-card">
                     <i class="fa-solid fa-shield-halved"></i>
 
-                    <strong>Live environment</strong>
+                    <strong>Illustrative markets</strong>
 
                     <p>
-                        Explore live markets using real
-                        asset prices.
+                        Browse sample prices. Trading and payments are not connected.
                     </p>
                 </div>
 
@@ -219,7 +219,7 @@
 
                     <div class="topbar-user-info">
                         <strong id="topbarUserName"> User</strong>
-                        <span>Live account</span>
+                        <span>Account ledger</span>
                     </div>
 
                     <div class="user-avatar" id="userAvatar">
@@ -243,11 +243,11 @@
 
                     <p>
                         All displayed prices and percentage movements
-                        values are illustrative. They are not investment recommendations.
+                        are illustrative. They are not investment recommendations.
                     </p>
                 </div>
 
-                <span class="demo-status">LIVE</span>
+                <span class="demo-status">SAMPLE</span>
 
             </div>
 
@@ -335,7 +335,7 @@
 
                     <span class="market-data-label">
                         <span></span>
-                        Live data
+                        Sample data
                     </span>
 
                 </div>
@@ -413,7 +413,7 @@
                                 <th>Asset</th>
                                 <th>Category</th>
                                 <th>Real-Time price</th>
-                                <th>Live movement</th>
+                                <th>Sample movement</th>
                                 <th>Your position</th>
                                 <th>Action</th>
                             </tr>
@@ -463,7 +463,7 @@
                     </p>
 
                     <!-- <p>
-                        Prices are both illustrative and live market data.
+                        Prices are illustrative sample data, not live quotations.
                     </p> -->
 
                 </div>
@@ -497,7 +497,7 @@
 
                 <p>
                     &copy; <span id="currentYear"></span>
-                    Nexora Capital Live.
+                    Nexora Capital.
                 </p>
 
                 <!-- <p>
@@ -512,179 +512,6 @@
 
 
     <!-- SHARED DEMO TRADE MODAL -->
-    <div class="trade-modal" id="tradeModal" role="dialog" aria-modal="true" aria-labelledby="tradeTitle"
-        aria-hidden="true">
-
-        <div class="trade-modal-content">
-
-            <div class="trade-modal-heading">
-
-                <div>
-                    <p class="section-eyebrow">LIVE ORDER</p>
-                    <h3 id="tradeTitle">Trade Asset</h3>
-                </div>
-
-                <button type="button" id="modalClose" class="modal-close" aria-label="Close dialog">
-                    <i class="fa-solid fa-xmark"></i>
-                </button>
-
-            </div>
-
-
-            <div class="trade-asset-heading">
-
-                <span id="tradeAssetIcon" class="asset-icon">
-                    <i class="fa-solid fa-chart-line"></i>
-                </span>
-
-                <div>
-                    <strong id="tradeAssetName">Asset name</strong>
-                    <span id="tradeAssetSymbol">SYMBOL</span>
-                </div>
-
-                <div class="trade-current-price">
-                    <strong id="tradePrice">$0.00</strong>
-                    <span>Live price</span>
-                </div>
-
-            </div>
-
-
-            <div class="trade-mode-buttons">
-
-                <button type="button" id="tradeBuyButton" class="trade-mode-button active">
-                    Buy
-                </button>
-
-                <button type="button" id="tradeSellButton" class="trade-mode-button">
-                    Sell
-                </button>
-
-            </div>
-
-
-            <form id="tradeForm">
-
-                <label for="tradeQuantity">
-                    Quantity
-                </label>
-
-                <input type="number" id="tradeQuantity" min="0.000001" step="any" placeholder="Enter quantity" required>
-
-                <div class="trade-calculation">
-
-                    <div>
-                        <span>Estimated total</span>
-                        <strong id="tradeEstimatedTotal">$0.00</strong>
-                    </div>
-
-                    <div>
-                        <span>Available cash</span>
-                        <strong id="tradeCashBalance">$25,000.00</strong>
-                    </div>
-
-                </div>
-
-                <p class="trade-demo-disclaimer">
-                    This order uses real-time prices.
-
-                </p>
-
-                <p id="tradeMessage" class="auth-message" aria-live="polite"></p>
-
-                <button type="submit" id="tradeSubmitButton" class="btn btn-primary btn-full">
-                    Confirm purchase
-                </button>
-
-            </form>
-
-        </div>
-
-    </div>
-
-    <!-- DEMO PAYMENT OPTIONS MODAL -->
-
-    <div class="modal-overlay" id="paymentOptionsModal">
-        <div class="modal-card payment-options-card">
-
-
-            <button class="modal-close" id="paymentModalClose" type="button">
-                &times;
-            </button>
-
-            <div class="payment-modal-header">
-                <span class="payment-icon">↗</span>
-                <p class="market-data-label"> CHECKOUT</p>
-                <h2>Choose Payment Method</h2>
-                <p>Select a payment method to continue with your simulated purchase.</p>
-            </div>
-
-            <div class="payment-order-summary">
-                <div>
-                    <span>Asset</span>
-                    <strong id="paymentAssetName">Bitcoin (BTC)</strong>
-                </div>
-                <div>
-                    <span>Purchase amount</span>
-                    <strong id="paymentPurchaseAmount">$0.00</strong>
-                </div>
-                <div>
-                    <span>Order type</span>
-                    <strong>Live purchase</strong>
-                </div>
-            </div>
-
-            <div class="payment-method-list">
-
-                <button class="payment-method-option" type="button" data-payment-method="crypto">
-                    <span class="payment-method-icon crypto-payment-icon">₿</span>
-                    <span class="payment-method-text">
-                        <strong>Cryptocurrency</strong>
-                        <small>View simulated crypto payment details</small>
-                    </span>
-                    <span class="payment-method-arrow">›</span>
-                </button>
-
-                <button class="payment-method-option" type="button" data-payment-method="bank">
-                    <span class="payment-method-icon bank-payment-icon">▤</span>
-                    <span class="payment-method-text">
-                        <strong>Bank Transfer</strong>
-                        <small>View simulated bank transfer details</small>
-                    </span>
-                    <span class="payment-method-arrow">›</span>
-                </button>
-
-            </div>
-
-            <div class="payment-instructions" id="paymentInstructions" hidden>
-                <h3 id="paymentInstructionsTitle">Payment instructions</h3>
-
-                <p id="paymentInstructionsDescription"></p>
-
-                <div class="payment-demo-notice">
-                    <strong>Live mode</strong>
-                    <p>
-                        This is a website prototype. No payment is requested,
-                        no funds are transferred, and no payment will be verified.
-                    </p>
-                </div>
-
-                <button class="btn btn-primary payment-demo-confirm" id="paymentDemoConfirm" type="button">
-                    Continue Live
-                </button>
-            </div>
-
-            <p class="payment-demo-footer">
-                Live checkout only · Real-Time transactions
-            </p>
-
-        </div>
-
-
-    </div>
-
-
-
     <!-- SHARED AUTHENTICATION HELPERS -->
     <script src="js/auth.js"></script>
 

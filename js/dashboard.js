@@ -1,31 +1,7 @@
 "use strict";
 
-/*
-=========================================================
-NEXORA CAPITAL — SIMULATED INVESTMENT DASHBOARD
-=========================================================
-
-This is an educational demonstration interface.
-
-- Market prices are illustrative.
-- Sample holdings and transactions are fictional.
-- No real brokerage or exchange is connected.
-- All transactions are simulated and stored in the browser.
-=========================================================
-*/
-
-
-// =======================================================
-// CONFIGURATION
-// =======================================================
-
-const DASHBOARD_PORTFOLIO_KEY = "nexora_portfolios";
-const DASHBOARD_TRANSACTION_KEY = "nexora_transactions";
-
-const NEXORA_DEMO_CASH = 350000;
-
-const NEXORA_DEMO_SEED_KEY = "nexora_demo_seeded_v1";
-
+/* Customer balances and history are fetched from the authenticated backend.
+   Market prices below are illustrative only; trading is disabled. */
 
 // These are illustrative demo prices, NOT live quotations.
 
@@ -190,69 +166,6 @@ let selectedTradeMode = "BUY";
 // STORAGE HELPERS
 // =======================================================
 
-function readDashboardStorage(key, fallback) {
-
-    try {
-
-        const value = localStorage.getItem(key);
-
-        if (!value) {
-            return fallback;
-        }
-
-        return JSON.parse(value);
-
-    } catch (error) {
-
-        console.error("Unable to read demo storage:", error);
-
-        return fallback;
-    }
-}
-
-
-function writeDashboardStorage(key, value) {
-
-    localStorage.setItem(key, JSON.stringify(value));
-
-}
-
-
-function saveDashboardPortfolio() {
-
-    const portfolios = readDashboardStorage(
-        DASHBOARD_PORTFOLIO_KEY,
-        {}
-    );
-
-    portfolios[dashboardUser.id] = dashboardPortfolio;
-
-    writeDashboardStorage(
-        DASHBOARD_PORTFOLIO_KEY,
-        portfolios
-    );
-
-}
-
-
-function saveDashboardTransactions() {
-
-    const transactions = readDashboardStorage(
-        DASHBOARD_TRANSACTION_KEY,
-        {}
-    );
-
-    transactions[dashboardUser.id] = dashboardTransactions;
-
-    writeDashboardStorage(
-        DASHBOARD_TRANSACTION_KEY,
-        transactions
-    );
-
-}
-
-
-// =======================================================
 // GENERAL HELPERS
 // =======================================================
 
@@ -504,370 +417,14 @@ function formatPurchaseDate(dateValue) {
 // DEMO PORTFOLIO SEEDING
 // =======================================================
 
-function createIllustrativePortfolio() {
-
-    /*
-    All values and dates below are fictional sample data.
-    This portfolio is only created for a new empty demo account.
-
-    The starting portfolio value is $2,500,000:
-    $2,150,000 in illustrative holdings
-    $350,000 in available cash
-    */
-
-    const today = new Date();
-
-    function monthsAgo(months, day = 15) {
-
-        const date = new Date(today);
-
-        date.setDate(1);
-        date.setMonth(date.getMonth() - months);
-        date.setDate(
-            Math.min(day, new Date(
-                date.getFullYear(),
-                date.getMonth() + 1,
-                0
-            ).getDate())
-        );
-
-        return date.toISOString();
-
-    }
-
-    const positions = [
-
-        {
-            symbol: "NVDA",
-            value: 420000,
-            costPerUnit: 130,
-            monthsHeld: 26
-        },
-
-        {
-            symbol: "MSFT",
-            value: 350000,
-            costPerUnit: 390,
-            monthsHeld: 24
-        },
-
-        {
-            symbol: "AAPL",
-            value: 280000,
-            costPerUnit: 190,
-            monthsHeld: 22
-        },
-
-        {
-            symbol: "AMZN",
-            value: 250000,
-            costPerUnit: 175,
-            monthsHeld: 20
-        },
-
-        {
-            symbol: "BTC",
-            value: 300000,
-            costPerUnit: 52000,
-            monthsHeld: 18
-        },
-
-        // {
-        //     symbol: "ETH",
-        //     value: 180000,
-        //     costPerUnit: 2800,
-        //     monthsHeld: 16
-        // },
-
-        {
-            symbol: "TSLA",
-            value: 220000,
-            costPerUnit: 210,
-            monthsHeld: 14
-        },
-
-        {
-            symbol: "WTI",
-            value: 150000,
-            costPerUnit: 70,
-            monthsHeld: 12
-        }
-
-    ];
-
-    const holdings = positions.map(position => {
-
-        const asset = getDemoAsset(position.symbol);
-
-        const quantity = position.value / asset.price;
-
-        return {
-
-            symbol: position.symbol,
-            quantity,
-            averagePrice: position.costPerUnit,
-            firstPurchaseDate: monthsAgo(position.monthsHeld),
-            demoSeeded: true
-
-        };
-
-    });
-
-    const transactions = [];
-
-    /*
-    Sample opening purchases and a sample reinvestment story.
-
-    These entries are illustrative activity records, not actual
-    executed orders. Values are calculated consistently with
-    the displayed positions where practical.
-    */
-
-    positions.forEach(position => {
-
-        const asset = getDemoAsset(position.symbol);
-
-        const quantity = position.value / asset.price;
-
-        transactions.push({
-
-            id: `demo-buy-${position.symbol}`,
-            type: "BUY",
-            symbol: position.symbol,
-            name: asset.name,
-            quantity,
-            price: asset.price,
-            total: position.value,
-            date: monthsAgo(position.monthsHeld),
-            simulated: true,
-            illustrative: true,
-            description: "Illustrative opening position"
-
-        });
-
-    });
-
-    transactions.push({
-
-        id: "demo-sell-tsla",
-        type: "SELL",
-        symbol: "TSLA",
-        name: "Tesla",
-        quantity: 100,
-        price: 245,
-        total: 24500,
-        costBasisSold: 21000,
-        realizedProfit: 3500,
-        date: monthsAgo(5),
-        simulated: true,
-        illustrative: true,
-        description: "Illustrative realized gain"
-
-    });
-
-    transactions.push({
-
-        id: "demo-reinvest-nvda",
-        type: "BUY",
-        symbol: "NVDA",
-        name: "NVIDIA",
-        quantity: 50,
-        price: 185,
-        total: 9250,
-        date: monthsAgo(4),
-        simulated: true,
-        illustrative: true,
-        description: "Illustrative reinvestment"
-
-    });
-
-    transactions.push({
-
-        id: "demo-reinvest-msft",
-        type: "BUY",
-        symbol: "MSFT",
-        name: "Microsoft",
-        quantity: 20,
-        price: 510,
-        total: 10200,
-        date: monthsAgo(3),
-        simulated: true,
-        illustrative: true,
-        description: "Illustrative reinvestment"
-
-    });
-
-    /*
-    Keep the sample activity clearly marked as illustrative.
-    The portfolio is a visual prototype, not an accounting ledger.
-    */
-
-    return {
-
-        portfolio: {
-
-            cashBalance: NEXORA_DEMO_CASH,
-            holdings,
-            currency: "USD",
-            createdAt: monthsAgo(26),
-            illustrative: true
-
-        },
-
-        transactions
-
-    };
-
-}
-
-
-function seedEmptyDemoAccountIfNeeded() {
-
-    const portfolios = readDashboardStorage(
-        DASHBOARD_PORTFOLIO_KEY,
-        {}
-    );
-
-    const transactionsByUser = readDashboardStorage(
-        DASHBOARD_TRANSACTION_KEY,
-        {}
-    );
-
-    const existingPortfolio = portfolios[dashboardUser.id];
-
-    const existingTransactions =
-        transactionsByUser[dashboardUser.id] || [];
-
-    /*
-    Do not replace an existing account that has positions
-    or transaction history.
-    */
-
-    const hasExistingHoldings =
-        existingPortfolio &&
-        Array.isArray(existingPortfolio.holdings) &&
-        existingPortfolio.holdings.length > 0;
-
-    const hasExistingTransactions =
-        Array.isArray(existingTransactions) &&
-        existingTransactions.length > 0;
-
-    if (hasExistingHoldings || hasExistingTransactions) {
-        return false;
-    }
-
-    /*
-    If the account is empty, populate the demo portfolio.
-    Existing empty accounts may receive this sample portfolio.
-    */
-
-    const sample = createIllustrativePortfolio();
-
-    portfolios[dashboardUser.id] = sample.portfolio;
-
-    transactionsByUser[dashboardUser.id] = sample.transactions;
-
-    writeDashboardStorage(
-        DASHBOARD_PORTFOLIO_KEY,
-        portfolios
-    );
-
-    writeDashboardStorage(
-        DASHBOARD_TRANSACTION_KEY,
-        transactionsByUser
-    );
-
-    localStorage.setItem(
-        `${NEXORA_DEMO_SEED_KEY}_${dashboardUser.id}`,
-        "true"
-    );
-
+async function loadDashboardAccount() {
+    await requireSession();
+    const data = await apiRequest('/api/account');
+    dashboardUser = data.user;
+    dashboardPortfolio = data.portfolio;
+    dashboardTransactions = data.transactions;
     return true;
-
 }
-
-
-// =======================================================
-// LOAD ACCOUNT
-// =======================================================
-
-function loadDashboardAccount() {
-
-    if (typeof getCurrentUser !== "function") {
-
-        console.error("getCurrentUser() was not found in auth.js.");
-
-        window.location.href = "login.html";
-
-        return false;
-    }
-
-    dashboardUser = getCurrentUser();
-
-    if (!dashboardUser) {
-
-        window.location.href = "login.html";
-
-        return false;
-    }
-
-    /*
-    Create the sample portfolio only when the current account
-    has no holdings and no transactions.
-    */
-
-    seedEmptyDemoAccountIfNeeded();
-
-    const portfolios = readDashboardStorage(
-        DASHBOARD_PORTFOLIO_KEY,
-        {}
-    );
-
-    const transactions = readDashboardStorage(
-        DASHBOARD_TRANSACTION_KEY,
-        {}
-    );
-
-    dashboardPortfolio = portfolios[dashboardUser.id];
-
-    dashboardTransactions = transactions[dashboardUser.id] || [];
-
-    if (!dashboardPortfolio) {
-
-        dashboardPortfolio = {
-
-            cashBalance: 25000,
-            holdings: [],
-            currency: "USD",
-            createdAt: new Date().toISOString()
-
-        };
-
-        portfolios[dashboardUser.id] = dashboardPortfolio;
-
-        writeDashboardStorage(
-            DASHBOARD_PORTFOLIO_KEY,
-            portfolios
-        );
-
-    }
-
-    if (!Array.isArray(dashboardPortfolio.holdings)) {
-        dashboardPortfolio.holdings = [];
-    }
-
-    if (!Array.isArray(dashboardTransactions)) {
-        dashboardTransactions = [];
-    }
-
-    return true;
-
-}
-
-
-// =======================================================
-// USER INTERFACE
-// =======================================================
 
 function renderDashboardUser() {
 
@@ -1254,7 +811,7 @@ function renderInvestmentHoldings() {
 
             <tr>
                 <td colspan="7" class="holdings-empty">
-                    No open demo positions are available.
+                    No open positions are available.
                 </td>
             </tr>
 
@@ -1354,74 +911,18 @@ function renderInvestmentHoldings() {
 // =======================================================
 
 function renderPortfolioChart() {
-
-    const line =
-        document.getElementById("portfolioChartLine");
-
-    const area =
-        document.getElementById("portfolioChartArea");
-
-    if (!line || !area) {
-        return;
+    const chart = document.getElementById('portfolioChart');
+    if (chart) {
+        chart.hidden = true;
+        chart.style.display = 'none';
+        if (!document.getElementById('chartUnavailable')) {
+            const note = document.createElement('p');
+            note.id = 'chartUnavailable';
+            note.textContent = 'Investment performance will appear after a brokerage integration is connected.';
+            chart.after(note);
+        }
     }
-
-    const totals = getPortfolioTotals();
-
-    /*
-    This is a decorative illustrative chart, not historical
-    account performance. Its final point represents the
-    current portfolio snapshot.
-    */
-
-    const points = [];
-
-    for (let i = 0; i < 24; i++) {
-
-        const x = (i / 23) * 700;
-
-        const trend = i * 0.65;
-
-        const variation =
-            Math.sin(i * 0.65) * 10 +
-            Math.sin(i * 0.21) * 15;
-
-        const upwardTrend = trend;
-
-        const y = Math.max(
-            35,
-            Math.min(185, 155 - upwardTrend - variation)
-        );
-
-        points.push({ x, y });
-
-    }
-
-    points[points.length - 1].y = 75;
-
-    const path = points.map((point, index) => {
-
-        return `${index === 0 ? "M" : "L"} ${point.x} ${point.y}`;
-
-    }).join(" ");
-
-    line.setAttribute("d", path);
-
-    area.setAttribute(
-        "d",
-        `${path} L 700 220 L 0 220 Z`
-    );
-
-    line.setAttribute(
-        "aria-label",
-        `Illustrative portfolio snapshot ${formatMoney(totals.portfolioValue)}`
-    );
-
 }
-
-
-// =======================================================
-// ASSET ALLOCATION
-// =======================================================
 
 function renderAssetAllocation() {
 
@@ -1467,7 +968,7 @@ function renderAssetAllocation() {
 
         legend.innerHTML = `
             <p class="allocation-empty">
-                No open demo positions.
+                No open positions.
             </p>
         `;
 
@@ -1576,7 +1077,7 @@ function renderRecentTransactions() {
 
             <tr>
                 <td colspan="4">
-                    No demo transactions yet.
+                    No account adjustments yet.
                 </td>
             </tr>
 
@@ -1841,534 +1342,21 @@ function refreshDashboard() {
 // TRADE MODAL
 // =======================================================
 
-function openTradeModal(symbol, mode = "BUY") {
-
-    const asset = getDemoAsset(symbol);
-
-    if (!asset) {
-        return;
-    }
-
-    selectedTradeAsset = asset;
-
-    selectedTradeMode = mode;
-
-    const modal = document.getElementById("tradeModal");
-
-    const title = document.getElementById("tradeTitle");
-    const assetName = document.getElementById("tradeAssetName");
-    const assetSymbol = document.getElementById("tradeAssetSymbol");
-    const assetIcon = document.getElementById("tradeAssetIcon");
-    const tradePrice = document.getElementById("tradePrice");
-    const quantityInput = document.getElementById("tradeQuantity");
-    const estimatedTotal = document.getElementById("tradeEstimatedTotal");
-    const cashBalance = document.getElementById("tradeCashBalance");
-    const tradeMessage = document.getElementById("tradeMessage");
-    const buyButton = document.getElementById("tradeBuyButton");
-    const sellButton = document.getElementById("tradeSellButton");
-    const submitButton = document.getElementById("tradeSubmitButton");
-
-    if (!modal) {
-        return;
-    }
-
-    if (title) {
-
-        title.textContent = mode === "BUY"
-            ? "Buy demo asset"
-            : "Sell demo asset";
-
-    }
-
-    if (assetName) {
-        assetName.textContent = asset.name;
-    }
-
-    if (assetSymbol) {
-        assetSymbol.textContent = asset.symbol;
-    }
-
-    if (assetIcon) {
-        assetIcon.innerHTML = `<i class="${escapeDashboardHTML(asset.icon)}"></i>`;
-    }
-
-    if (tradePrice) {
-        tradePrice.textContent = formatMoney(asset.price);
-    }
-
-    if (quantityInput) {
-
-        quantityInput.value = "";
-
-        quantityInput.max = mode === "SELL"
-            ? (getAssetHolding(symbol)?.quantity || 0)
-            : "";
-
-    }
-
-    if (estimatedTotal) {
-        estimatedTotal.textContent = formatMoney(0);
-    }
-
-    if (cashBalance) {
-        cashBalance.textContent =
-            formatMoney(dashboardPortfolio.cashBalance);
-    }
-
-    if (tradeMessage) {
-        tradeMessage.textContent = "";
-        tradeMessage.style.color = "";
-    }
-
-    if (buyButton) {
-        buyButton.classList.toggle("active", mode === "BUY");
-    }
-
-    if (sellButton) {
-        sellButton.classList.toggle("active", mode === "SELL");
-    }
-
-    if (submitButton) {
-
-        submitButton.disabled = false;
-
-        submitButton.textContent = mode === "BUY"
-            ? "Confirm demo purchase"
-            : "Confirm demo sale";
-
-    }
-
-    modal.classList.add("show");
-
-    modal.setAttribute("aria-hidden", "false");
-
-    document.body.classList.add("modal-open");
-
-    if (quantityInput) {
-        quantityInput.focus();
-    }
-
+function openTradeModal() {
+    window.alert('Trading is not enabled. The displayed market prices are illustrative. No order or payment will be placed.');
 }
-
-
-function closeTradeModal() {
-
-    const modal = document.getElementById("tradeModal");
-
-    if (!modal) {
-        return;
-    }
-
-    modal.classList.remove("show");
-
-    modal.setAttribute("aria-hidden", "true");
-
-    document.body.classList.remove("modal-open");
-
-    selectedTradeAsset = null;
-
-}
-
-
-function changeTradeMode(mode) {
-
-    if (!selectedTradeAsset) {
-        return;
-    }
-
-    openTradeModal(selectedTradeAsset.symbol, mode);
-
-}
-
-
-function updateTradeEstimate() {
-
-    if (!selectedTradeAsset) {
-        return;
-    }
-
-    const quantityInput =
-        document.getElementById("tradeQuantity");
-
-    const estimate =
-        document.getElementById("tradeEstimatedTotal");
-
-    if (!quantityInput || !estimate) {
-        return;
-    }
-
-    const quantity = Number(quantityInput.value);
-
-    const total = Number.isFinite(quantity) && quantity > 0
-        ? quantity * selectedTradeAsset.price
-        : 0;
-
-    estimate.textContent = formatMoney(total);
-
-}
-
-
-// =======================================================
-// SIMULATED BUY
-// =======================================================
-
-function executeDemoBuy(asset, quantity) {
-
-    const total = asset.price * quantity;
-
-    if (!Number.isFinite(total) || total <= 0) {
-        throw new Error("Enter a valid quantity.");
-    }
-
-    if (total > dashboardPortfolio.cashBalance + 0.000001) {
-
-        throw new Error(
-            "Insufficient demo cash for this simulated purchase."
-        );
-
-    }
-
-    let holding = getAssetHolding(asset.symbol);
-
-    if (!holding) {
-
-        holding = {
-
-            symbol: asset.symbol,
-            quantity: 0,
-            averagePrice: 0,
-            firstPurchaseDate: new Date().toISOString()
-
-        };
-
-        dashboardPortfolio.holdings.push(holding);
-
-    }
-
-    const previousCost =
-        holding.quantity * holding.averagePrice;
-
-    const newQuantity =
-        holding.quantity + quantity;
-
-    const newCost =
-        previousCost + total;
-
-    holding.quantity = newQuantity;
-
-    holding.averagePrice = newCost / newQuantity;
-
-    dashboardPortfolio.cashBalance -= total;
-
-    dashboardTransactions.push({
-
-        id: crypto.randomUUID(),
-        type: "BUY",
-        symbol: asset.symbol,
-        name: asset.name,
-        quantity,
-        price: asset.price,
-        total,
-        date: new Date().toISOString(),
-        simulated: true,
-        illustrative: false
-
-    });
-
-    saveDashboardPortfolio();
-
-    saveDashboardTransactions();
-
-}
-
-
-// =======================================================
-// SIMULATED SELL
-// =======================================================
-
-function executeDemoSell(asset, quantity) {
-
-    const holding = getAssetHolding(asset.symbol);
-
-    if (!holding || holding.quantity <= 0) {
-
-        throw new Error(
-            "You do not have a demo position in this asset."
-        );
-
-    }
-
-    if (quantity > holding.quantity + 0.000000001) {
-
-        throw new Error(
-            "You cannot sell more units than your demo holding."
-        );
-
-    }
-
-    const total = asset.price * quantity;
-
-    const costBasisSold =
-        holding.averagePrice * quantity;
-
-    const realizedProfit =
-        total - costBasisSold;
-
-    if (!Number.isFinite(total) || total <= 0) {
-        throw new Error("Enter a valid quantity.");
-    }
-
-    holding.quantity -= quantity;
-
-    dashboardPortfolio.cashBalance += total;
-
-    if (holding.quantity < 0.000000001) {
-
-        dashboardPortfolio.holdings =
-            dashboardPortfolio.holdings.filter(
-                item => item.symbol !== asset.symbol
-            );
-
-    }
-
-    dashboardTransactions.push({
-
-        id: crypto.randomUUID(),
-        type: "SELL",
-        symbol: asset.symbol,
-        name: asset.name,
-        quantity,
-        price: asset.price,
-        total,
-        costBasisSold,
-        realizedProfit,
-        date: new Date().toISOString(),
-        simulated: true,
-        illustrative: false
-
-    });
-
-    saveDashboardPortfolio();
-
-    saveDashboardTransactions();
-
-}
-
-
-// =======================================================
-// HANDLE TRADE FORM
-// =======================================================
-
-function handleDemoTrade(event) {
-
-    event.preventDefault();
-
-    if (!selectedTradeAsset) {
-        return;
-    }
-
-    const quantityInput =
-        document.getElementById("tradeQuantity");
-
-    const message =
-        document.getElementById("tradeMessage");
-
-    const submitButton =
-        document.getElementById("tradeSubmitButton");
-
-    if (!quantityInput || !message || !submitButton) {
-        return;
-    }
-
-    const quantity = Number(quantityInput.value);
-
-    if (!Number.isFinite(quantity) || quantity <= 0) {
-
-        message.textContent =
-            "Enter a quantity greater than zero.";
-
-        message.style.color = "#ff7185";
-
-        return;
-
-    }
-
-    try {
-
-        if (selectedTradeMode === "BUY") {
-
-            executeDemoBuy(
-                selectedTradeAsset,
-                quantity
-            );
-
-        } else {
-
-            executeDemoSell(
-                selectedTradeAsset,
-                quantity
-            );
-
-        }
-
-        message.textContent =
-            selectedTradeMode === "BUY"
-                ? "Simulated purchase completed."
-                : "Simulated sale completed.";
-
-        message.style.color = "#32d6a0";
-
-        submitButton.disabled = true;
-
-        const cashBalance =
-            document.getElementById("tradeCashBalance");
-
-        if (cashBalance) {
-
-            cashBalance.textContent =
-                formatMoney(dashboardPortfolio.cashBalance);
-
-        }
-
-        refreshDashboard();
-
-        window.setTimeout(() => {
-
-            closeTradeModal();
-
-            submitButton.disabled = false;
-
-        }, 900);
-
-    } catch (error) {
-
-        message.textContent =
-            error.message || "Unable to process demo order.";
-
-        message.style.color = "#ff7185";
-
-    }
-
-}
-
-
-// =======================================================
-// EVENT LISTENERS
-// =======================================================
-
 function initializeDashboardEvents() {
-
-    const logoutButton =
-        document.getElementById("logoutButton");
-
-    if (logoutButton) {
-
-        logoutButton.addEventListener("click", () => {
-
-            if (typeof logoutDemoUser === "function") {
-
-                logoutDemoUser();
-
-            } else {
-
-                sessionStorage.removeItem("nexora_current_user");
-
-                window.location.href = "login.html";
-
-            }
-
-        });
-
-    }
-
-    const modalClose =
-        document.getElementById("modalClose");
-
-    if (modalClose) {
-        modalClose.addEventListener("click", closeTradeModal);
-    }
-
-    const buyButton =
-        document.getElementById("tradeBuyButton");
-
-    if (buyButton) {
-
-        buyButton.addEventListener("click", () => {
-            changeTradeMode("BUY");
-        });
-
-    }
-
-    const sellButton =
-        document.getElementById("tradeSellButton");
-
-    if (sellButton) {
-
-        sellButton.addEventListener("click", () => {
-            changeTradeMode("SELL");
-        });
-
-    }
-
-    const quantityInput =
-        document.getElementById("tradeQuantity");
-
-    if (quantityInput) {
-
-        quantityInput.addEventListener(
-            "input",
-            updateTradeEstimate
-        );
-
-    }
-
-    const tradeForm =
-        document.getElementById("tradeForm");
-
-    if (tradeForm) {
-
-        tradeForm.addEventListener(
-            "submit",
-            handleDemoTrade
-        );
-
-    }
-
-    const tradeModal =
-        document.getElementById("tradeModal");
-
-    if (tradeModal) {
-
-        tradeModal.addEventListener("click", event => {
-
-            if (event.target.id === "tradeModal") {
-                closeTradeModal();
-            }
-
-        });
-
-    }
-
-    document.addEventListener("keydown", event => {
-
-        if (event.key === "Escape") {
-            closeTradeModal();
-        }
-
-    });
-
+    document.getElementById('logoutButton')?.addEventListener('click', logoutUser);
 }
 
-
-// =======================================================
 // INITIALIZE DASHBOARD
 // =======================================================
 
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
 
     try {
 
-        const accountLoaded = loadDashboardAccount();
+        const accountLoaded = await loadDashboardAccount();
 
         if (!accountLoaded) {
             return;
@@ -2379,9 +1367,31 @@ document.addEventListener("DOMContentLoaded", () => {
         initializeDashboardEvents();
 
         refreshDashboard();
+        document.dispatchEvent(new Event('account-ready'));
+        // Refresh balances from the server when returning to the page and periodically.
+        let refreshing = false;
+        async function synchronizeAccount() {
+            if (document.hidden || refreshing) return;
+            refreshing = true;
+            try {
+                const data = await apiRequest('/api/account');
+                dashboardUser = data.user;
+                dashboardPortfolio = data.portfolio;
+                dashboardTransactions = data.transactions;
+                renderDashboardUser();
+                refreshDashboard();
+                document.getElementById('accountLoadStatus')?.remove();
+            } catch (error) {
+                if (error.status === 401) window.location.replace('login.html');
+                else showAccountLoadError('Account updates are unavailable. Displayed balances may be out of date.');
+            } finally { refreshing = false; }
+        }
+        window.setInterval(synchronizeAccount, 15000);
+        document.addEventListener('visibilitychange', synchronizeAccount);
 
     } catch (error) {
 
+        if (error.status !== 401) showAccountLoadError('Unable to load your account. Please reload to try again.');
         console.error("Dashboard initialization failed:", error);
 
         const marketContainer =
@@ -2403,3 +1413,13 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
 });
+function showAccountLoadError(message) {
+    let element = document.getElementById('accountLoadStatus');
+    if (!element) {
+        element = document.createElement('p');
+        element.id = 'accountLoadStatus';
+        element.setAttribute('role', 'alert');
+        document.querySelector('main')?.prepend(element);
+    }
+    element.textContent = message;
+}

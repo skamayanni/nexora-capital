@@ -1,0 +1,16 @@
+{
+  "name": "nexora-capital",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": "24.x"
+  },
+  "scripts": {
+    "start": "node server/index.js",
+    "dev": "node --watch server/index.js",
+    "create-admin": "node server/create-admin.js",
+    "test": "node --test test/*.test.js",
+    "build": "node scripts/build-static.js"
+  }
+}

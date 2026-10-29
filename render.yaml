@@ -1,0 +1,24 @@
+services:
+  - type: web
+    name: nexora-capital-backend
+    runtime: node
+    plan: starter
+    buildCommand: npm ci --ignore-scripts
+    startCommand: npm start
+    healthCheckPath: /api/health
+    autoDeploy: false
+    envVars:
+      - key: NODE_VERSION
+        value: 24
+      - key: NODE_ENV
+        value: production
+      - key: HOST
+        value: 0.0.0.0
+      - key: PUBLIC_ORIGIN
+        value: https://nexoracapitalinc.vercel.app
+      - key: DATABASE_PATH
+        value: /var/data/nexora/nexora.sqlite
+    disk:
+      name: nexora-data
+      mountPath: /var/data/nexora
+      sizeGB: 1
