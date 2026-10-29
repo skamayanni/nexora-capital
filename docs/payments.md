@@ -34,7 +34,7 @@ Withdrawal implementation is a separate flow requiring verified beneficiary deta
 
 ## Implementation boundary
 
-Existing server endpoints support accounts and manual administrative adjustments only. Selecting a provider is a prerequisite to implementing and testing its checkout/transfer instructions, signed webhook verification, settlement handling and real payments. The current build must not accept real customer funds until these capabilities and operational controls are implemented and verified.
+Existing server endpoints support accounts, manual administrative adjustments and explicitly unverified recorded allocations. Internal allocation deductions do not establish receipt of funds, execution or ownership. Selecting a provider is a prerequisite to implementing and testing its checkout/transfer instructions, signed webhook verification, settlement handling and real payments. The current build must not accept real customer funds until these capabilities and operational controls are implemented and verified.
 
 ## Provider selection status
 

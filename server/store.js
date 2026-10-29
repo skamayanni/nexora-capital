@@ -51,7 +51,23 @@ export function openStore(path = process.env.DATABASE_PATH || '.data/nexora.sqli
       UNIQUE(user_id, request_key)
     );
     CREATE INDEX IF NOT EXISTS drafts_user ON order_drafts(user_id, created_at);
-    PRAGMA user_version=2;`);
+    CREATE TABLE IF NOT EXISTS recorded_allocations (
+      id TEXT PRIMARY KEY, user_id TEXT NOT NULL REFERENCES users(id), symbol TEXT NOT NULL,
+      asset_name TEXT NOT NULL, asset_class TEXT NOT NULL CHECK(asset_class IN ('stock','crypto')),
+      amount_cents INTEGER NOT NULL CHECK(amount_cents>0), request_key TEXT NOT NULL,
+      created_at TEXT NOT NULL, verification_status TEXT NOT NULL CHECK(verification_status='purchase_not_verified'),
+      released_at TEXT, UNIQUE(user_id, request_key)
+    );
+    CREATE INDEX IF NOT EXISTS allocations_user ON recorded_allocations(user_id, created_at);
+    CREATE TABLE IF NOT EXISTS allocation_events (
+      ledger_id TEXT PRIMARY KEY REFERENCES ledger(id), allocation_id TEXT NOT NULL REFERENCES recorded_allocations(id),
+      kind TEXT NOT NULL CHECK(kind IN ('ALLOCATION','RELEASE')), UNIQUE(allocation_id,kind)
+    );
+    CREATE TRIGGER IF NOT EXISTS allocation_identity_immutable BEFORE UPDATE OF id,user_id,symbol,asset_name,asset_class,amount_cents,request_key,created_at,verification_status ON recorded_allocations BEGIN SELECT RAISE(ABORT,'Allocation identity is immutable'); END;
+    CREATE TRIGGER IF NOT EXISTS allocation_no_delete BEFORE DELETE ON recorded_allocations BEGIN SELECT RAISE(ABORT,'Allocation records are immutable'); END;
+    CREATE TRIGGER IF NOT EXISTS allocation_event_no_update BEFORE UPDATE ON allocation_events BEGIN SELECT RAISE(ABORT,'Allocation events are immutable'); END;
+    CREATE TRIGGER IF NOT EXISTS allocation_event_no_delete BEFORE DELETE ON allocation_events BEGIN SELECT RAISE(ABORT,'Allocation events are immutable'); END;
+    PRAGMA user_version=3;`);
   return db;
 }
 export function publicUser(row) {

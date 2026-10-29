@@ -1,40 +1,61 @@
-# Customer-directed investing
+# Recorded customer allocations
 
-The selected product model is self-directed stock and cryptocurrency orders: customers choose their own assets and order sizes, without administrator approval. An investment page is available at `invest.html`, linked from Overview, Markets, Profile, Portfolio and Transactions.
+The customer has selected **recorded allocations**, not simulated purchases or brokerage execution. Customers choose a stock or cryptocurrency and record an exact USD amount themselves. Administrator approval is not required. Every allocation is labelled **Recorded allocation — purchase not verified**. Neither purchase, custody, ownership, units, market value nor investment returns are claimed.
 
-## Implemented now
+## Customer workflow
 
-Customers can browse an explicitly labelled example catalogue, choose buy or sell, prepare a market-order draft, review it, and save or discard it. Buy drafts support USD amounts or units; sell drafts use units. Quotes, fees, quantities for a USD amount, market availability, and tradability are not invented. The catalogue is not a brokerage-approved asset list.
+1. Open `invest.html` from the customer dashboard or Markets.
+2. Choose a stock or cryptocurrency and enter an amount in USD.
+3. Review the asset, exact amount and available balance after the proposed allocation.
+4. Explicitly acknowledge that asset purchase/ownership have not been verified and confirm the allocation.
+5. The server atomically deducts the amount from the available recorded balance, creates the allocation, and writes an immutable ledger event and audit entry.
+6. The allocation appears on Invest, Portfolio and Overview with its asset, USD amount, date and verification label. The administrator can view the same record and history.
 
-Drafts are stored in SQLite, scoped to the signed-in customer. Retried saves use idempotency keys. Customer-provided account IDs and balances are never trusted. Admin users must use a separate customer account to prepare drafts. Each customer can keep up to 100 drafts. Saving a draft does not place, reserve, fund, buy, sell, or transfer anything. Drafts will never be submitted automatically when a provider is later connected.
+The total recorded balance equals the available recorded balance plus active recorded allocations. For example, allocating $165.01 from a recorded balance of $1,000.00 leaves $834.99 available and $165.01 allocated; the total remains $1,000.00. This is internal bookkeeping, not movement to an exchange or proof of receipt/custody of real money. Administrative debits can only deduct available recorded balance, not allocated amounts. The total account limit includes active allocations.
 
-The page separately displays the recorded ledger balance, unavailable brokerage buying power, saved drafts, and an empty placed-order section. Actual execution is blocked on both client and server. There are no live trading credentials, real quotes, fake fills, invented returns, or synthetic positions.
+Customers can release an allocation back to the available recorded balance. Release returns the original amount exactly once, without a sale, profit, fee or withdrawal. The allocation record remains visible as released, and the immutable release event remains in history. Customers cannot release other customers' allocations. A suspended account cannot create or release allocations until reactivated.
 
-| API | Access and behavior |
+## Accounting and safeguards
+
+All amounts are stored in integer cents. Creation, available-balance changes, event links, and audit records commit in a single SQLite transaction. Concurrent requests cannot overdraw. Creation requires an idempotency key scoped to the customer; repeating the same request returns the original record. A conflicting reuse is rejected. Releases are intrinsically idempotent by allocation ID, so an uncertain response can be retried without returning the amount twice.
+
+If the browser cannot confirm a creation response, it retains the request identifier and offers Retry. It prevents editing that uncertain request into a new one until a definitive response is received. After a page reload, customers should check allocation history before starting another record. All authorization, acknowledgement, amount and availability checks are enforced on the server as well as in the UI.
+
+Allocation records cannot be edited or deleted through the API. Their identifying financial fields and ledger/event/audit rows have database immutability triggers. As with the existing ledger, the database owner can still alter the database/schema; these controls are not tamper-proof external custody verification.
+
+## API
+
+Every endpoint uses the existing HttpOnly session cookie. Mutations require the exact configured Origin and a valid CSRF token.
+
+| Endpoint | Behavior |
 | --- | --- |
-| `GET /api/trading` | Signed in; catalogue, connection status, own latest drafts, no quotes/positions/orders |
-| `POST /api/trading/drafts` | Customer; `symbol`, `side`, `sizing`, decimal-string `size`, `orderType: market`; CSRF and `Idempotency-Key` required |
-| `POST /api/trading/drafts/:id/discard` | Customer owning that draft; CSRF required |
-| `POST /api/trading/orders` | Signed in and CSRF protected; rejects execution because brokerage is not connected |
+| `GET /api/trading` | Own allocation summary, allocation history, catalogue and legacy drafts; real quotes/orders remain unavailable |
+| `POST /api/trading/allocations` | Customer only; JSON `symbol`, decimal-string `amount`, `acknowledgement: purchase_not_verified`; requires `Idempotency-Key` |
+| `POST /api/trading/allocations/:id/release` | Owning customer only; releases the original amount once and retains history |
+| `GET /api/account` | Available/allocated/total recorded balances, own allocation history and ledger events |
+| `GET /api/admin/users/:id` | Admin access to that customer's balances, allocation history and audit events |
+| `POST /api/trading/orders` | Rejects actual trading because no execution provider is connected |
 
-The additive database update creates `order_drafts` and advances the schema to version 2. Existing users, sessions, ledger entries, and audit records remain. Tests exercise migration from a database with existing balances/history. Back up the persistent database according to your operating procedure before upgrades; never delete or recreate the database to install this feature.
+The record status is `recorded` or `released`. Verification remains `purchase_not_verified` in both cases. The catalogue associates records with asset names/symbols only and contains no live prices. Allocation endpoints accept USD amounts, not fictional stock/coin quantities. Invest and Portfolio show the latest 500 allocation records; totals include all active allocations.
 
-## Deploy this update
+## Existing drafts and data
 
-Vercel and Render are separate deployments. Vercel follows `main`; the existing Render service follows `feat/server-accounts-admin` with automatic application deployments disabled. The update must be available on both branches.
+Earlier order drafts remain in the database without deductions or automatic conversion. The Invest page places them under “Previous order drafts.” Customers can use a prior USD buy draft to prefill an allocation, then review and confirm it separately. Unit-sized or sell drafts require a new USD amount because no exchange quote is fabricated. Legacy draft endpoints remain available for compatibility. Admin accounts must use a separate customer login to create their own allocations.
 
-1. On Render, open `nexora-capital-backend` → **Manual Deploy → Deploy latest commit**. Confirm the selected commit is the new investing update. Keep the existing environment variables and persistent disk. A normal restart applies the additive schema update.
-2. Wait for Render to show **Live** and its health check to pass.
-3. Wait for the corresponding Vercel production deployment to show **Ready**.
-4. Use a customer account to open `https://nexoracapitalinc.vercel.app/invest.html`. Admin accounts can view the page but cannot create customer drafts.
-5. Save and discard a disposable draft; verify the recorded balance and ledger remain unchanged. Confirm Place order stays disabled.
+The additive version 3 schema creates `recorded_allocations` and `allocation_events`; it preserves users, passwords, sessions, ledger entries, audit records and prior drafts. No balances change during migration. Existing balances change only when customers explicitly confirm an allocation or release. Migration and persistence are covered by tests.
 
-The frontend detects an older backend and explains that a Render update is needed. Existing account/admin features continue to work during this rollout. No Render credentials are available to the agent, so a push alone does not establish a successful backend deployment.
+## Deployment
 
-## Still required for actual orders
+The existing Vercel site deploys from `main`; the Render backend deploys from `feat/server-accounts-admin` with automatic application deploys disabled. Publish the update to both branches, then:
 
-No brokerage provider account is connected. Actual order placement cannot be completed until the platform has the provider's approved business arrangement, sandbox credentials, per-customer account onboarding, and the required live permissions. Keys must be entered through secure deployment configuration, never chat or source code. Account verification and trade eligibility must come from the provider.
+1. Follow the established backup procedure for the persistent database. Do not delete, reseed, recreate or detach the disk.
+2. On Render, open **nexora-capital-backend → Manual Deploy → Deploy latest commit**. Keep the current environment variables and disk. Wait for **Live**.
+3. Wait for Vercel's latest production deployment to show **Ready**.
+4. Sign in as a customer and refresh `https://nexoracapitalinc.vercel.app/invest.html`.
+5. Verify an allocation is clearly labelled and that the exact amount moves between available and allocated. Check Portfolio, Overview, customer history and the admin view. A release must restore only the original amount and retain its history.
 
-The remaining integration must fetch authoritative tradable assets, live quotes, settled funds, buying power and holdings; validate order sizes and market rules; submit with provider idempotency; record acknowledgements, partial fills, fills, rejections and cancellations; verify signed events; and reconcile positions and cash. Administrative ledger credits must not create provider buying power. Starting with the provider's sandbox does not authorize live orders or receipt of customer funds.
+The page detects an older backend and requests a Render update rather than pretending the allocation succeeded. The agent has no Render deployment credentials, so GitHub publication does not establish backend deployment success.
 
-The feature delivered here is order preparation with persisted drafts. It is not a functioning brokerage connection or permission to accept real funds.
+## Real assets
+
+Recorded allocations work without connecting a brokerage, because they do not execute a trade. Actual asset purchases or assertions of ownership still require a real execution/custody process and supporting evidence. Payment processing, stock/crypto execution, verified holdings and investment returns remain outside this feature. Do not relabel these records as verified purchases merely because an amount was deducted internally.

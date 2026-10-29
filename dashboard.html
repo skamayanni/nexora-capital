@@ -135,7 +135,7 @@
 
 
             <!-- DEMO NOTICE -->
-            <div class="overview-demo-notice">Account ledger: credits and debits are recorded adjustments, not proof of a payment or investment. Deposits, withdrawals, and trading are not connected yet.</div>
+            <div class="overview-demo-notice">Account ledger: credits, debits, and allocations are recorded entries. Allocated amounts are set aside within your records; asset purchases are not verified.</div>
 
 
             <!-- WELCOME -->
@@ -169,7 +169,7 @@
             </section>
 
 
-            <!-- TOTAL PORTFOLIO VALUE -->
+            <!-- TOTAL RECORDED VALUE -->
             <section class="overview-balance-card">
 
                 <div class="overview-balance-content">
@@ -178,7 +178,7 @@
 
                         <span class="overview-balance-dot"></span>
 
-                        TOTAL PORTFOLIO VALUE
+                        TOTAL RECORDED VALUE
 
                     </div>
 
@@ -187,7 +187,7 @@
                     </h2>
 
                     <p>
-                        Combined available cash and asset holdings
+                        Available recorded balance plus recorded allocations
                     </p>
 
                     <div class="overview-balance-actions">
@@ -218,7 +218,7 @@
 
                     <div class="overview-stat-heading">
 
-                        <span>Recorded balance</span>
+                        <span>Available recorded balance</span>
 
                         <i class="fa-solid fa-wallet"></i>
 
@@ -228,7 +228,7 @@
                         $0.00
                     </h3>
 
-                    <p>Uninvested balance</p>
+                    <p>Available for recorded allocations</p>
 
                 </article>
 
@@ -237,7 +237,7 @@
 
                     <div class="overview-stat-heading">
 
-                        <span>Invested value</span>
+                        <span>Recorded allocations</span>
 
                         <i class="fa-solid fa-layer-group"></i>
 
@@ -247,7 +247,7 @@
                         $0.00
                     </h3>
 
-                    <p>Current holdings value</p>
+                    <p>Asset purchases not verified</p>
 
                 </article>
 
@@ -274,6 +274,8 @@
 
             </section>
 
+
+            <section class="overview-panel"><div class="overview-panel-heading"><h3>Recorded allocations — purchases not verified</h3><a href="invest.html">Allocate balance</a></div><p>These USD amounts are account records, not verified asset holdings or market values.</p><div class="table-scroll"><table><thead><tr><th>Asset</th><th>Recorded amount</th><th>Date</th><th>Verification</th></tr></thead><tbody id="dashboardRecordedAllocations"></tbody></table></div></section>
 
             <!-- CHART AND ALLOCATION -->
             <section class="overview-analysis-grid">

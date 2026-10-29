@@ -95,6 +95,6 @@ test('existing accounts and ledger history survive the additive draft schema mig
     assert.equal(upgraded.prepare('SELECT balance_cents FROM users WHERE id=?').get(id).balance_cents,1234);
     assert.equal(upgraded.prepare('SELECT count(*) AS n FROM ledger').get().n,1);
     assert.equal(upgraded.prepare('SELECT count(*) AS n FROM order_drafts').get().n,0);
-    assert.equal(upgraded.prepare('PRAGMA user_version').get().user_version,2);upgraded.close();
+    assert.equal(upgraded.prepare('PRAGMA user_version').get().user_version,3);upgraded.close();
   } finally {rmSync(directory,{recursive:true,force:true});}
 });

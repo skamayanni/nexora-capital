@@ -35,3 +35,5 @@
 .review-details dt { color:#a2b2ca; }
 .review-details dd { margin:0; overflow-wrap:anywhere; }
 @media(max-width:750px) { .trading-balances { grid-template-columns:1fr; gap:8px; } }
+.account-page .acknowledgement { line-height:1.6; }
+.account-page .acknowledgement input { display:inline-block; width:auto; margin:0 8px 0 0; }

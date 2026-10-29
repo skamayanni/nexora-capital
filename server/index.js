@@ -1,3 +1,4 @@
+import { allocationList, allocationSummary } from './allocations.js';
 import { createServer } from 'node:http';
 import { randomBytes, randomUUID, createHash } from 'node:crypto';
 import { readFile } from 'node:fs/promises';
@@ -38,9 +39,10 @@ export function createApp({ db = openStore(), origin = process.env.PUBLIC_ORIGIN
   }
   function account(id) {
     const row = db.prepare('SELECT * FROM users WHERE id=?').get(id);
-    return { user: publicUser(row), portfolio: {cashBalance:row.balance_cents/100, currency:'USD',holdings:[],createdAt:row.created_at},
-      transactions: db.prepare('SELECT * FROM ledger WHERE user_id=? ORDER BY rowid DESC').all(id).map(e=>({
-        id:e.id, type:e.delta_cents>0?'CREDIT':'DEBIT',symbol:'USD',total:Math.abs(e.delta_cents)/100,
+    const summary=allocationSummary(db,id);
+    return { user: publicUser(row), recordedAllocations:allocationList(db,id), portfolio: {cashBalance:row.balance_cents/100,allocatedBalance:summary.allocatedBalance,totalRecordedBalance:summary.totalRecordedBalance,currency:'USD',holdings:[],createdAt:row.created_at},
+      transactions: db.prepare(`SELECT l.*, a.kind AS allocation_kind, r.symbol AS allocation_symbol FROM ledger l LEFT JOIN allocation_events a ON a.ledger_id=l.id LEFT JOIN recorded_allocations r ON r.id=a.allocation_id WHERE l.user_id=? ORDER BY l.rowid DESC`).all(id).map(e=>({
+        id:e.id, type:e.allocation_kind || (e.delta_cents>0?'CREDIT':'DEBIT'),symbol:e.allocation_symbol || 'USD',total:Math.abs(e.delta_cents)/100,
         description:e.reason,date:e.created_at,balanceAfter:e.balance_after_cents/100,actorId:e.actor_id
       })) };
   }
@@ -136,7 +138,7 @@ export function createApp({ db = openStore(), origin = process.env.PUBLIC_ORIGIN
         if (req.method==='GET' && path==='/api/admin/users') {
           const q=(url.searchParams.get('q')||'').slice(0,100).toLowerCase();
           const users=db.prepare("SELECT * FROM users WHERE instr(lower(email || ' ' || first_name || ' ' || last_name),?)>0 ORDER BY created_at DESC LIMIT 200").all(q);
-          json(200,{users:users.map(u=>({...publicUser(u),balance:u.balance_cents/100,currency:'USD'}))});return;
+          json(200,{users:users.map(u=>({...publicUser(u),balance:u.balance_cents/100,...allocationSummary(db,u.id),currency:'USD'}))});return;
         }
         const match=/^\/api\/admin\/users\/([a-f0-9-]{36})(?:\/(adjustments))?$/.exec(path);
         if (!match) fail(404,'Not found.');
@@ -179,7 +181,8 @@ export function createApp({ db = openStore(), origin = process.env.PUBLIC_ORIGIN
             if(current.status!=='active') fail(409,'Reactivate the account before adjusting its balance.');
             const next=current.balance_cents+delta;
             if(next<0) fail(409,'Insufficient balance for this debit.');
-            if(next>100000000000) fail(400,'Account balance limit exceeded.');
+            const allocated=db.prepare('SELECT coalesce(sum(amount_cents),0) AS cents FROM recorded_allocations WHERE user_id=? AND released_at IS NULL').get(id).cents;
+            if(next+allocated>100000000000) fail(400,'Account balance limit exceeded.');
             const entry={id:randomUUID(),user_id:id,actor_id:actor.id,delta_cents:delta,balance_after_cents:next,reason,request_key:key,created_at:now()};
             db.prepare('UPDATE users SET balance_cents=?,version=version+1 WHERE id=?').run(next,id);
             db.prepare('INSERT INTO ledger VALUES (?,?,?,?,?,?,?,?)').run(...Object.values(entry));

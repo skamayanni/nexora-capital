@@ -35,6 +35,10 @@ function renderSelected(data) {
     byId('selectedAccount').hidden=false;
     byId('accountHeading').textContent=`${data.user.firstName} ${data.user.lastName} · ${data.user.email}`;
     byId('selectedBalance').textContent=money(data.portfolio.cashBalance);
+    byId('selectedAllocationSummary').textContent=`Allocated (purchase not verified): ${money(data.portfolio.allocatedBalance || 0)} · Total recorded balance: ${money(data.portfolio.totalRecordedBalance ?? data.portfolio.cashBalance)}`;
+    const allocationRows=byId('adminAllocationRows');allocationRows.replaceChildren();
+    for(const allocation of data.recordedAllocations || []) cells(allocationRows,[`${allocation.name} (${allocation.symbol})`,money(allocation.amount),new Date(allocation.createdAt).toLocaleString(),`${allocation.status==='released'?'Released':'Recorded'} — purchase not verified`]);
+    if(!data.recordedAllocations?.length) cells(allocationRows,['No recorded allocations.']);
     const form=byId('editProfile');
     for(const key of ['firstName','lastName','email','status']) form.elements[key].value=data.user[key];
     for(const field of form.elements) field.disabled=data.user.role==='admin';

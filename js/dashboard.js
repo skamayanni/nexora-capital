@@ -157,6 +157,7 @@ const NEXORA_MARKETS = [
 let dashboardUser = null;
 let dashboardPortfolio = null;
 let dashboardTransactions = [];
+let dashboardRecordedAllocations = [];
 
 let selectedTradeAsset = null;
 let selectedTradeMode = "BUY";
@@ -328,7 +329,8 @@ function getPortfolioTotals() {
 
         cash,
         investedValue,
-        portfolioValue: cash + investedValue,
+        portfolioValue: cash + investedValue + (Number(dashboardPortfolio.allocatedBalance) || 0),
+        allocatedValue: Number(dashboardPortfolio.allocatedBalance) || 0,
         costBasis,
         profitLoss
 
@@ -423,6 +425,7 @@ async function loadDashboardAccount() {
     dashboardUser = data.user;
     dashboardPortfolio = data.portfolio;
     dashboardTransactions = data.transactions;
+    dashboardRecordedAllocations = data.recordedAllocations || [];
     return true;
 }
 
@@ -514,7 +517,7 @@ function renderDashboardStats() {
 
     // Current value of investments
     if (investedValue) {
-        investedValue.textContent = formatMoney(totals.investedValue);
+        investedValue.textContent = formatMoney(totals.allocatedValue);
     }
 
     // Unrealized profit or loss
@@ -1323,7 +1326,22 @@ function renderPortfolioInsights() {
 // REFRESH DASHBOARD
 // =======================================================
 
+function renderRecordedAllocations() {
+    const body=document.getElementById('dashboardRecordedAllocations');
+    if(!body) return;
+    body.replaceChildren();
+    const active=dashboardRecordedAllocations.filter(allocation=>allocation.status==='recorded');
+    for(const allocation of active) {
+        const row=document.createElement('tr');
+        for(const value of [`${allocation.name} (${allocation.symbol})`,formatMoney(allocation.amount),new Date(allocation.createdAt).toLocaleDateString(),'Recorded allocation — purchase not verified']) {
+            const cell=document.createElement('td');cell.textContent=value;row.append(cell);
+        }
+        body.append(row);
+    }
+    if(!active.length) {const row=document.createElement('tr'),cell=document.createElement('td');cell.colSpan=4;cell.textContent='No active recorded allocations among the latest 500 records.';row.append(cell);body.append(row);}
+}
 function refreshDashboard() {
+    renderRecordedAllocations();
 
     renderDashboardStats();
 
@@ -1378,6 +1396,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                 dashboardUser = data.user;
                 dashboardPortfolio = data.portfolio;
                 dashboardTransactions = data.transactions;
+                dashboardRecordedAllocations = data.recordedAllocations || [];
                 renderDashboardUser();
                 refreshDashboard();
                 document.getElementById('accountLoadStatus')?.remove();

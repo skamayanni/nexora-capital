@@ -1,3 +1,4 @@
+import { allocationList, allocationSummary, allocationRequest } from './allocations.js';
 import { randomUUID } from 'node:crypto';
 
 // A discovery catalogue, not a list of broker-approved or currently tradable assets.
@@ -21,9 +22,11 @@ export function tradingRequest({db,actor,path,method,body,headers}) {
     return {status:200,data:{
       brokerage:{status:'not_connected',canSubmitOrders:false,buyingPower:null,settledCash:null,
         message:'A brokerage account and verified funding are required before placing orders.'},
+      recordedAllocations:allocationList(db,actor.id),allocationSummary:allocationSummary(db,actor.id),recordedAllocationsEnabled:true,
       assets,assetsAreIndicative:true,quotesAvailable:false,positions:[],orders:[],drafts:list()
     }};
   }
+  if(path.startsWith('/api/trading/allocations')) return allocationRequest({db,actor,path,method,body,headers,assets});
   // Never turn a manually edited cash ledger into broker buying power.
   // Live order execution must use provider-owned accounts, quotes, funds and positions.
   if(method==='POST' && path==='/api/trading/orders') {

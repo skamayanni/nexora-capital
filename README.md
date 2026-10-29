@@ -38,7 +38,7 @@ The CLI uses the same `DATABASE_PATH` as the app. It refuses to promote or overw
 
 ## Customer investing
 
-Customers place their own stock/crypto orders in the intended product model. The new **Invest** page supports asset selection, buy/sell order preparation, review, and private server-saved drafts. **Actual order placement remains unavailable until a brokerage is integrated.** Drafts never change balances or create holdings. See [investing and rollout instructions](docs/investing.md), including the required Render backend deployment.
+Customers can now create **recorded allocations** themselves: select a stock or cryptocurrency, enter an exact USD amount, review and acknowledge the verification limit, then confirm. The amount moves from available recorded balance to allocated balance and appears on their portfolio and in the admin view as **Recorded allocation — purchase not verified**. Releases return the original amount once and preserve history. These are internal records, not verified asset purchases, and no shares, coins or returns are invented. Previous drafts are preserved without automatic deductions. See [allocation and deployment instructions](docs/investing.md), including the required Render backend update.
 
 ## Customer and administrator workflows
 
@@ -73,7 +73,7 @@ All mutations accept JSON and require an exact matching `Origin`. Authenticated 
 | `POST /api/login` | Public | Session (`email`, `password`) |
 | `GET /api/session` | Signed in | Current user and CSRF token |
 | `POST /api/logout` | Signed in | Revoke current session |
-| `GET /api/account` | Signed in | Own profile, balance, and full adjustment history |
+| `GET /api/account` | Signed in | Own profile, available/allocated balances, allocations and ledger history |
 | `GET /api/admin/users?q=...` | Admin | Up to 200 matching accounts |
 | `GET /api/admin/users/:id` | Admin | Profile, ledger, latest 200 audit events |
 | `PATCH /api/admin/users/:id` | Admin | Edit `firstName`, `lastName`, `email`, `status`, with current integer `version` |
