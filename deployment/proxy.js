@@ -17,6 +17,17 @@ export function createProxyHandler({ backendOrigin, allowLocalHttp = false } = {
       if(backend.protocol!=='https:' && !local) throw new Error();
     } catch {sendError(503,'The account backend is not configured. Contact the site administrator.');return;}
     const incoming=new URL(req.url,'https://frontend.invalid');
+    // Vercel's explicit rewrite routes every API depth to this one function.
+    // Restore the original API path from the rewrite, keeping the user's query.
+    const routes=incoming.searchParams.getAll('__nexora_path');
+    if(routes.length) {
+      const route=routes[0];
+      if(routes.length!==1 || !/^\/api\/[a-zA-Z0-9_/-]+$/.test(route) || route.includes('//')) {
+        sendError(400,'Invalid API route.');return;
+      }
+      incoming.pathname=route;
+      incoming.searchParams.delete('__nexora_path');
+    }
     if(!incoming.pathname.startsWith('/api/')) {sendError(404,'Not found.');return;}
     if(!['GET','POST','PATCH','HEAD'].includes(req.method)) {sendError(405,'Method not allowed.');return;}
     const target=new URL(incoming.pathname+incoming.search,backend);

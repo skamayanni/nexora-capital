@@ -8,7 +8,15 @@ async function apiRequest(path, { method = 'GET', body, headers = {} } = {}) {
         headers: { 'Content-Type': 'application/json', ...(csrfToken ? {'X-CSRF-Token': csrfToken} : {}), ...headers },
         ...(body === undefined ? {} : { body: JSON.stringify(body) })
     });
-    const data = await response.json().catch(() => ({error: 'Unable to contact the server.'}));
+    let data;
+    try { data = await response.json(); }
+    catch {
+        const error = new Error(response.status === 404
+            ? 'The account API route was not found. Please reload after the latest deployment.'
+            : `The account service returned an unexpected response (HTTP ${response.status}). Please try again.`);
+        error.status = response.status;
+        throw error;
+    }
     if (!response.ok) {
         const error = new Error(data.error || 'Request failed.');
         error.status = response.status;
