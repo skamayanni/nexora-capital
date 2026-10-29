@@ -482,6 +482,27 @@ function renderDashboardUser() {
 }
 
 
+// Account balance comparison requested for the P/L cards; includes available cash.
+function getRecordedBalanceComparison() {
+    const allocated = Number(dashboardPortfolio.allocatedBalance) || 0;
+    const recorded = Number(dashboardPortfolio.totalRecordedBalance);
+    const total = Number.isFinite(recorded) ? recorded : (Number(dashboardPortfolio.cashBalance) || 0) + allocated;
+    const percentage = allocated > 0 ? ((total - allocated) / allocated) * 100 : null;
+    return {
+        percentage,
+        text: percentage === null ? '—' : `${percentage > 0 ? '+' : ''}${percentage.toFixed(2)}%`
+    };
+}
+
+function renderRecordedBalanceComparison(element) {
+    if (!element) return;
+    const { percentage, text } = getRecordedBalanceComparison();
+    element.textContent = text;
+    element.classList.toggle('positive', percentage !== null && percentage > 0);
+    element.classList.toggle('negative', percentage !== null && percentage < 0);
+    element.title = 'Percentage difference from allocated balance to total recorded value, including available cash.';
+}
+
 // =======================================================
 // DASHBOARD STATISTICS
 // =======================================================
@@ -520,40 +541,11 @@ function renderDashboardStats() {
         investedValue.textContent = formatMoney(totals.allocatedValue);
     }
 
-    // Unrealized profit or loss
-    if (profitLossElement) {
-
-        profitLossElement.textContent =
-            formatMoney(totals.profitLoss);
-
-        profitLossElement.classList.toggle(
-            "positive",
-            totals.profitLoss > 0
-        );
-
-        profitLossElement.classList.toggle(
-            "negative",
-            totals.profitLoss < 0
-        );
-    }
-
-    // Percentage return
+    renderRecordedBalanceComparison(profitLossElement);
     if (profitLossNote) {
-
-        if (totals.costBasis > 0) {
-
-            const percentage =
-                (totals.profitLoss / totals.costBasis) * 100;
-
-            profitLossNote.textContent =
-                `${percentage >= 0 ? "+" : ""}${percentage.toFixed(2)}% ` +
-                "illustrative unrealized return";
-
-        } else {
-
-            profitLossNote.textContent = "No open positions";
-
-        }
+        profitLossNote.textContent = getRecordedBalanceComparison().percentage === null
+            ? 'Allocate balance to calculate'
+            : 'Total recorded value vs. allocated balance';
     }
 }
 
@@ -720,13 +712,13 @@ function renderInvestmentHoldings() {
     const summary = {
         holdingsAssetCount: new Set(active.map(item => item.symbol)).size,
         holdingsCostBasis: formatMoney(allocated),
-        holdingsCurrentValue: formatMoney(Number.isFinite(total) ? total : (Number(dashboardPortfolio.cashBalance) || 0) + allocated),
-        holdingsProfitLoss: '—'
+        holdingsCurrentValue: formatMoney(Number.isFinite(total) ? total : (Number(dashboardPortfolio.cashBalance) || 0) + allocated)
     };
     for (const [id, value] of Object.entries(summary)) {
         const element = document.getElementById(id);
         if (element) element.textContent = value;
     }
+    renderRecordedBalanceComparison(document.getElementById('holdingsProfitLoss'));
     const tableBody = document.getElementById('investmentHoldingsBody');
     if (!tableBody) return;
     tableBody.innerHTML = active.length ? active.map(item => `
