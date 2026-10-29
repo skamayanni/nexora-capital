@@ -1327,18 +1327,20 @@ function renderPortfolioInsights() {
 // =======================================================
 
 function renderRecordedAllocations() {
+    const balance=document.getElementById('dashboardAllocatedBalance');
+    if(balance) balance.textContent=formatMoney(Number(dashboardPortfolio.allocatedBalance) || 0);
     const body=document.getElementById('dashboardRecordedAllocations');
     if(!body) return;
     body.replaceChildren();
     const active=dashboardRecordedAllocations.filter(allocation=>allocation.status==='recorded');
     for(const allocation of active) {
         const row=document.createElement('tr');
-        for(const value of [`${allocation.name} (${allocation.symbol})`,formatMoney(allocation.amount),new Date(allocation.createdAt).toLocaleDateString(),'Recorded allocation — purchase not verified']) {
+        for(const value of [`${allocation.name} (${allocation.symbol})`,formatMoney(allocation.amount),new Date(allocation.createdAt).toLocaleDateString()]) {
             const cell=document.createElement('td');cell.textContent=value;row.append(cell);
         }
         body.append(row);
     }
-    if(!active.length) {const row=document.createElement('tr'),cell=document.createElement('td');cell.colSpan=4;cell.textContent='No active recorded allocations among the latest 500 records.';row.append(cell);body.append(row);}
+    if(!active.length) {const row=document.createElement('tr'),cell=document.createElement('td');cell.colSpan=3;cell.textContent='No allocations yet.';row.append(cell);body.append(row);}
 }
 function refreshDashboard() {
     renderRecordedAllocations();
