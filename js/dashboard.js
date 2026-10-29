@@ -939,30 +939,25 @@ function renderAssetAllocation() {
         return;
     }
 
-    const holdings = dashboardPortfolio.holdings
-        .map(holding => {
-
-            const asset = getDemoAsset(holding.symbol);
-
-            if (!asset) {
-                return null;
-            }
-
-            return {
-
-                ...holding,
-                asset,
-                value: getHoldingValue(holding)
-
-            };
-
-        })
-        .filter(holding => holding && holding.value > 0);
-
-    const total = holdings.reduce(
-        (sum, holding) => sum + holding.value,
-        0
-    );
+    // Group active account allocations in cents; released entries are history.
+    const grouped = new Map();
+    for (const allocation of dashboardRecordedAllocations) {
+        if (allocation.status !== 'recorded') continue;
+        const cents = Math.round(Number(allocation.amount) * 100);
+        if (!Number.isSafeInteger(cents) || cents <= 0) continue;
+        const existing = grouped.get(allocation.symbol);
+        if (existing) existing.cents += cents;
+        else grouped.set(allocation.symbol, { asset: { name: `${allocation.name} (${allocation.symbol})` }, cents });
+    }
+    const listedCents = [...grouped.values()].reduce((sum, item) => sum + item.cents, 0);
+    const totalCents = Math.max(listedCents, Math.round((Number(dashboardPortfolio.allocatedBalance) || 0) * 100));
+    const holdings = [...grouped.values()].map(item => ({ asset: item.asset, value: item.cents / 100 }));
+    // The API returns the latest 500 records; keep older active amounts represented.
+    if (totalCents > listedCents) holdings.push({ asset: { name: 'Other allocations' }, value: (totalCents - listedCents) / 100 });
+    const total = totalCents / 100;
+    const totalElement = document.getElementById('allocationTotal');
+    if (totalElement) totalElement.textContent = formatMoney(total);
+    donut.setAttribute('aria-label', `Allocated balance: ${formatMoney(total)} across ${holdings.length} assets`);
 
     if (total <= 0) {
 
@@ -971,7 +966,7 @@ function renderAssetAllocation() {
 
         legend.innerHTML = `
             <p class="allocation-empty">
-                No open positions.
+                No allocations yet.
             </p>
         `;
 
@@ -1041,7 +1036,7 @@ function renderAssetAllocation() {
                 </strong>
 
                 <small>
-                    ${segment.percentage.toFixed(1)}% of invested value
+                    ${segment.percentage.toFixed(1)}% of allocated balance
                 </small>
 
             </div>
