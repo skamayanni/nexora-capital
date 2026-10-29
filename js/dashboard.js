@@ -1141,20 +1141,50 @@ function renderPortfolioInsights() {
 // =======================================================
 
 function renderRecordedAllocations() {
-    const balance=document.getElementById('dashboardAllocatedBalance');
-    if(balance) balance.textContent=formatMoney(Number(dashboardPortfolio.allocatedBalance) || 0);
-    const body=document.getElementById('dashboardRecordedAllocations');
-    if(!body) return;
-    body.replaceChildren();
-    const active=dashboardRecordedAllocations.filter(allocation=>allocation.status==='recorded');
-    for(const allocation of active) {
-        const row=document.createElement('tr');
-        for(const value of [`${allocation.name} (${allocation.symbol})`,formatMoney(allocation.amount),new Date(allocation.createdAt).toLocaleDateString()]) {
-            const cell=document.createElement('td');cell.textContent=value;row.append(cell);
-        }
-        body.append(row);
+    const chart = document.getElementById('allocationActivityChart');
+    if (!chart) return;
+    const records = dashboardRecordedAllocations.filter(item => Number(item.amount) > 0 && Number.isFinite(Date.parse(item.createdAt)))
+        .slice().sort((a, b) => Date.parse(a.createdAt) - Date.parse(b.createdAt));
+    const totalCents = records.reduce((sum, item) => sum + Math.round(Number(item.amount) * 100), 0);
+    const volume = totalCents / 100;
+    const set = (id, value) => { const node = document.getElementById(id); if (node) node.textContent = value; };
+    set('trajectoryVolume', formatMoney(volume));
+    set('trajectoryActive', formatMoney(Number(dashboardPortfolio.allocatedBalance) || 0));
+    set('trajectoryCount', records.length);
+    set('trajectoryAssets', new Set(records.map(item => item.symbol)).size);
+    set('trajectoryMax', formatMoney(volume));
+    set('trajectoryMid', formatMoney(volume / 2));
+    const date = value => new Date(value).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
+    set('trajectoryStart', records.length ? date(records[0].createdAt) : '—');
+    set('trajectoryEnd', records.length ? date(records.at(-1).createdAt) : '—');
+    const empty = document.getElementById('trajectoryEmpty');
+    if (empty) empty.hidden = records.length > 0;
+    let cumulative = 0;
+    const firstTime = records.length ? Date.parse(records[0].createdAt) : 0;
+    const span = records.length ? Date.parse(records.at(-1).createdAt) - firstTime : 0;
+    const points = records.map((item, index) => {
+        cumulative += Math.round(Number(item.amount) * 100);
+        const x = span > 0 ? 24 + ((Date.parse(item.createdAt) - firstTime) / span) * 592 : 24 + ((index + 1) / records.length) * 592;
+        return { x, y: 240 - (cumulative / totalCents) * 220, item, cumulative: cumulative / 100 };
+    });
+    const line = points.length ? 'M0 240 ' + points.map(point => `L${point.x.toFixed(2)} ${point.y.toFixed(2)}`).join(' ') : '';
+    document.getElementById('trajectoryLine').setAttribute('d', line);
+    document.getElementById('trajectoryFlow').setAttribute('d', line);
+    document.getElementById('trajectoryArea').setAttribute('d', points.length ? `${line} L${points.at(-1).x} 260 L0 260 Z` : '');
+    const markers = document.getElementById('trajectoryMarkers');
+    markers.replaceChildren();
+    for (const [index, point] of points.entries()) {
+        const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        circle.setAttribute('cx', point.x); circle.setAttribute('cy', point.y);
+        circle.setAttribute('r', index === points.length - 1 ? 5 : 3);
+        circle.setAttribute('class', index === points.length - 1 ? 'trajectory-point trajectory-latest' : 'trajectory-point');
+        const title = document.createElementNS('http://www.w3.org/2000/svg', 'title');
+        title.textContent = `${point.item.symbol} · ${formatMoney(point.item.amount)} · ${date(point.item.createdAt)} · cumulative ${formatMoney(point.cumulative)}`;
+        circle.append(title); markers.append(circle);
     }
-    if(!active.length) {const row=document.createElement('tr'),cell=document.createElement('td');cell.colSpan=3;cell.textContent='No allocations yet.';row.append(cell);body.append(row);}
+    chart.setAttribute('aria-label', `${records.length} recorded allocation events, cumulative volume ${formatMoney(volume)}. Not market performance.`);
+    const feed = document.getElementById('trajectoryFeed');
+    feed.innerHTML = records.length ? records.slice(-3).reverse().map(item => `<div class="trajectory-event"><span class="trajectory-event-icon" aria-hidden="true">↗</span><div><strong>${escapeDashboardHTML(item.symbol)}</strong><small>${escapeDashboardHTML(date(item.createdAt))} · ${item.status === 'released' ? 'Released' : 'Allocated'}</small></div><strong>${formatMoney(item.amount)}</strong></div>`).join('') : '<p class="allocation-empty">No allocation activity yet.</p>';
 }
 function refreshDashboard() {
     renderRecordedAllocations();

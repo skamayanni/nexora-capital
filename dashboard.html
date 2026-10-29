@@ -278,7 +278,30 @@
             <!-- ALLOCATIONS AND BREAKDOWN -->
             <section class="overview-analysis-grid">
 
-                <article class="overview-panel dashboard-allocations-panel"><div class="overview-panel-heading"><h3>Allocations</h3><a href="invest.html">Allocate balance</a></div><p>Total allocated balance</p><h2 id="dashboardAllocatedBalance">$0.00</h2><div class="table-scroll"><table><thead><tr><th>Asset</th><th>Amount (USD)</th><th>Date</th></tr></thead><tbody id="dashboardRecordedAllocations"></tbody></table></div></article>
+                <article class="overview-panel allocation-activity-panel">
+                    <div class="overview-panel-heading">
+                        <div><p class="section-eyebrow">CAPITAL ACTIVITY</p><h3>Allocation trajectory</h3></div>
+                        <a href="invest.html" class="text-link">Allocate balance <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i></a>
+                    </div>
+                    <div class="trajectory-summary"><div><span>Cumulative allocation volume</span><strong id="trajectoryVolume">$0.00</strong></div><span class="trajectory-status"><i aria-hidden="true"></i> ACCOUNT ACTIVITY</span></div>
+                    <div class="trajectory-chart">
+                        <div class="trajectory-axis"><span id="trajectoryMax">$0</span><span id="trajectoryMid">$0</span><span>$0</span></div>
+                        <svg id="allocationActivityChart" viewBox="0 0 640 260" role="img" aria-label="Cumulative recorded allocation volume" preserveAspectRatio="none">
+                            <defs><linearGradient id="trajectoryFill" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#32d6a0" stop-opacity=".32"/><stop offset="100%" stop-color="#32d6a0" stop-opacity="0"/></linearGradient></defs>
+                            <g class="trajectory-grid" aria-hidden="true"><path d="M0 20H640 M0 75H640 M0 130H640 M0 185H640 M0 240H640 M0 0V260 M80 0V260 M160 0V260 M240 0V260 M320 0V260 M400 0V260 M480 0V260 M560 0V260 M640 0V260"/></g>
+                            <path id="trajectoryArea" fill="url(#trajectoryFill)"/>
+                            <path id="trajectoryLine" class="trajectory-line"/>
+                            <path id="trajectoryFlow" class="trajectory-flow" aria-hidden="true"/>
+                            <g id="trajectoryMarkers"></g>
+                        </svg>
+                        <p id="trajectoryEmpty" class="trajectory-empty">Your activity graph begins with your first allocation.</p>
+                    </div>
+                    <div class="trajectory-dates"><span id="trajectoryStart">—</span><span id="trajectoryEnd">—</span></div>
+                    <div class="trajectory-metrics"><div><span>Active balance</span><strong id="trajectoryActive">$0.00</strong></div><div><span>Allocation events</span><strong id="trajectoryCount">0</strong></div><div><span>Assets allocated</span><strong id="trajectoryAssets">0</strong></div></div>
+                    <div class="trajectory-feed-heading"><span>RECENT ACTIVITY</span><span class="trajectory-signal" aria-hidden="true">▂ ▄ ▆ ▃ ▅</span></div>
+                    <div id="trajectoryFeed" class="trajectory-feed"></div>
+                    <p class="trajectory-caption">Cumulative recorded amounts · latest 500 allocations · releases do not reduce cumulative volume.</p>
+                </article>
 
                 <!-- ASSET ALLOCATION -->
                 <article class="overview-panel allocation-panel">
