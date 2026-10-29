@@ -43,7 +43,15 @@ export function openStore(path = process.env.DATABASE_PATH || '.data/nexora.sqli
     CREATE TRIGGER IF NOT EXISTS ledger_no_delete BEFORE DELETE ON ledger BEGIN SELECT RAISE(ABORT, 'Ledger entries are immutable'); END;
     CREATE TRIGGER IF NOT EXISTS audit_no_update BEFORE UPDATE ON audit BEGIN SELECT RAISE(ABORT, 'Audit entries are immutable'); END;
     CREATE TRIGGER IF NOT EXISTS audit_no_delete BEFORE DELETE ON audit BEGIN SELECT RAISE(ABORT, 'Audit entries are immutable'); END;
-    PRAGMA user_version=1;`);
+    CREATE TABLE IF NOT EXISTS order_drafts (
+      id TEXT PRIMARY KEY, user_id TEXT NOT NULL REFERENCES users(id), symbol TEXT NOT NULL,
+      asset_class TEXT NOT NULL CHECK(asset_class IN ('stock','crypto')),
+      side TEXT NOT NULL CHECK(side IN ('buy','sell')), sizing TEXT NOT NULL CHECK(sizing IN ('notional','quantity')),
+      size TEXT NOT NULL, request_key TEXT NOT NULL, created_at TEXT NOT NULL,
+      UNIQUE(user_id, request_key)
+    );
+    CREATE INDEX IF NOT EXISTS drafts_user ON order_drafts(user_id, created_at);
+    PRAGMA user_version=2;`);
   return db;
 }
 export function publicUser(row) {

@@ -23,3 +23,15 @@
 .account-page [hidden] { display:none !important; }
 .account-page .muted { color:#a2b2ca; }
 @media(max-width:750px) { .account-columns { grid-template-columns:1fr; } .account-card { padding:16px; } }
+.trading-balances { display:grid; grid-template-columns:repeat(3,1fr); gap:24px; }
+.account-page .unavailable { font-size:24px; color:#a2b2ca; }
+.asset-choice-list { display:grid; gap:10px; max-height:440px; overflow:auto; }
+.account-page .asset-choice { display:flex; justify-content:space-between; gap:12px; text-align:left; background:#1a2a40; color:#e9eef8; border:1px solid #43516a; }
+.account-page .asset-choice[aria-pressed=true] { border-color:#44d6a4; background:#17392e; }
+.account-page .asset-choice small { color:#a2b2ca; }
+.account-page fieldset { border:0; margin:0; padding:0; min-width:0; }
+.account-page fieldset:disabled { opacity:.65; }
+.review-details { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+.review-details dt { color:#a2b2ca; }
+.review-details dd { margin:0; overflow-wrap:anywhere; }
+@media(max-width:750px) { .trading-balances { grid-template-columns:1fr; gap:8px; } }

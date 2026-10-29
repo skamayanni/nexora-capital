@@ -653,7 +653,7 @@ function renderDashboardMarkets() {
         button.addEventListener("click", () => {
 
             window.location.href =
-                "markets.html?asset=" +
+                "invest.html?asset=" +
                 encodeURIComponent(button.dataset.buySymbol);
 
         });
@@ -1342,8 +1342,8 @@ function refreshDashboard() {
 // TRADE MODAL
 // =======================================================
 
-function openTradeModal() {
-    window.alert('Trading is not enabled. The displayed market prices are illustrative. No order or payment will be placed.');
+function openTradeModal(symbol) {
+    window.location.href = 'invest.html?asset=' + encodeURIComponent(symbol || '');
 }
 function initializeDashboardEvents() {
     document.getElementById('logoutButton')?.addEventListener('click', logoutUser);

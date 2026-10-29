@@ -41,7 +41,7 @@ test('proxy refuses missing, insecure, and request-controlled destinations',asyn
 });
 test('static output contains only public pages and assets',()=>{
   execFileSync(process.execPath,['scripts/build-static.js']);
-  for(const file of ['index.html','admin.html','login.html','js/auth.js','css/accounts.css']) assert.ok(existsSync('dist/'+file));
+  for(const file of ['index.html','admin.html','login.html','invest.html','js/invest.js','js/auth.js','css/accounts.css']) assert.ok(existsSync('dist/'+file));
   for(const file of ['server','test','.env','.data','package.json','render.yaml']) assert.equal(existsSync('dist/'+file),false);
   assert.ok(readdirSync('dist').every(name=>name.endsWith('.html')||['css','js','images'].includes(name)));
 });

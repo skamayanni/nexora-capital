@@ -211,7 +211,7 @@ function renderMarketsTable() {
                         class="small-action-button"
                         data-market-buy="${escapeDashboardHTML(asset.symbol)}"
                     >
-                        Trading unavailable
+                        Prepare draft
                     </button>
                 </td>
 

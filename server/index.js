@@ -3,6 +3,7 @@ import { randomBytes, randomUUID, createHash } from 'node:crypto';
 import { readFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import { resolve, extname, sep } from 'node:path';
+import { tradingRequest } from './trading.js';
 import { openStore, publicUser, hashPassword, verifyPassword, atomic } from './store.js';
 
 const root = resolve(fileURLToPath(new URL('../', import.meta.url)));
@@ -126,6 +127,10 @@ export function createApp({ db = openStore(), origin = process.env.PUBLIC_ORIGIN
         json(200,{ok:true});return;
       }
       if (req.method==='GET' && path==='/api/account') { json(200,account(actor.id));return; }
+      if (path.startsWith('/api/trading')) {
+        const result=tradingRequest({db,actor,path,method:req.method,body,headers:req.headers});
+        json(result.status,result.data);return;
+      }
       if (path.startsWith('/api/admin/')) {
         if (actor.role!=='admin') fail(403,'Administrator access required.');
         if (req.method==='GET' && path==='/api/admin/users') {

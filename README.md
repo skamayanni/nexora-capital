@@ -36,6 +36,10 @@ unset ADMIN_PASSWORD
 
 The CLI uses the same `DATABASE_PATH` as the app. It refuses to promote or overwrite an existing email. Login through `login.html`; administrators land on `admin.html`. Keep administrator credentials private. No admin is automatically seeded by running tests or starting the app.
 
+## Customer investing
+
+Customers place their own stock/crypto orders in the intended product model. The new **Invest** page supports asset selection, buy/sell order preparation, review, and private server-saved drafts. **Actual order placement remains unavailable until a brokerage is integrated.** Drafts never change balances or create holdings. See [investing and rollout instructions](docs/investing.md), including the required Render backend deployment.
+
 ## Customer and administrator workflows
 
 - Registration and login use server validation, salted scrypt password hashes, eight-hour server sessions, HttpOnly SameSite cookies, CSRF protection, same-origin writes, and basic login throttling. Session tokens are stored hashed in the database.
