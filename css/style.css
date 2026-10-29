@@ -3588,8 +3588,38 @@ img {
 .overview-analysis-grid {
     display: grid;
     grid-template-columns: minmax(0, 1.6fr) minmax(270px, 1fr);
-    gap: 18px;
-    margin-bottom: 20px;
+    gap: 24px;
+    margin-bottom: 24px;
+}
+
+.dashboard-allocations-panel > p {
+    color: var(--text-muted);
+    font-size: 13px;
+    margin-bottom: 8px;
+}
+
+.dashboard-allocations-panel > h2 {
+    font-family: "Manrope", sans-serif;
+    font-size: clamp(24px, 3vw, 34px);
+    overflow-wrap: anywhere;
+    margin-bottom: 24px;
+}
+
+.dashboard-allocations-panel table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+}
+
+.dashboard-allocations-panel th,
+.dashboard-allocations-panel td {
+    padding: 14px 12px;
+    border-bottom: 1px solid var(--border);
+}
+
+.dashboard-allocations-panel th:first-child,
+.dashboard-allocations-panel td:first-child {
+    padding-left: 0;
 }
 
 .overview-panel {
@@ -3783,7 +3813,7 @@ img {
 .overview-bottom-grid {
     display: grid;
     grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-    gap: 18px;
+    gap: 24px;
 }
 
 .overview-watchlist {
