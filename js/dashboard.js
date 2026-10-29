@@ -1152,39 +1152,43 @@ function renderRecordedAllocations() {
     set('trajectoryActive', formatMoney(Number(dashboardPortfolio.allocatedBalance) || 0));
     set('trajectoryCount', records.length);
     set('trajectoryAssets', new Set(records.map(item => item.symbol)).size);
-    set('trajectoryMax', formatMoney(volume));
-    set('trajectoryMid', formatMoney(volume / 2));
+    const peak = records.reduce((max, item) => Math.max(max, Number(item.amount)), 0);
+    set('trajectoryMax', formatMoney(peak));
+    set('trajectoryMid', formatMoney(peak / 2));
     const date = value => new Date(value).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
     set('trajectoryStart', records.length ? date(records[0].createdAt) : '—');
     set('trajectoryEnd', records.length ? date(records.at(-1).createdAt) : '—');
     const empty = document.getElementById('trajectoryEmpty');
     if (empty) empty.hidden = records.length > 0;
-    let cumulative = 0;
     const firstTime = records.length ? Date.parse(records[0].createdAt) : 0;
     const span = records.length ? Date.parse(records.at(-1).createdAt) - firstTime : 0;
     const points = records.map((item, index) => {
-        cumulative += Math.round(Number(item.amount) * 100);
         const x = span > 0 ? 24 + ((Date.parse(item.createdAt) - firstTime) / span) * 592 : 24 + ((index + 1) / records.length) * 592;
-        return { x, y: 240 - (cumulative / totalCents) * 220, item, cumulative: cumulative / 100 };
+        return { x, y: 240 - (Number(item.amount) / peak) * 220, item };
     });
-    const line = points.length ? 'M0 240 ' + points.map(point => `L${point.x.toFixed(2)} ${point.y.toFixed(2)}`).join(' ') : '';
+    const line = points.map((point, index) => `${index ? 'L' : 'M'}${point.x.toFixed(2)} ${point.y.toFixed(2)}`).join(' ');
     document.getElementById('trajectoryLine').setAttribute('d', line);
     document.getElementById('trajectoryFlow').setAttribute('d', line);
-    document.getElementById('trajectoryArea').setAttribute('d', points.length ? `${line} L${points.at(-1).x} 260 L0 260 Z` : '');
+    document.getElementById('trajectoryArea').setAttribute('d', points.length ? `${line} L${points.at(-1).x} 260 L${points[0].x} 260 Z` : '');
     const markers = document.getElementById('trajectoryMarkers');
     markers.replaceChildren();
+    const bars = document.getElementById('trajectoryBars');
+    bars.replaceChildren();
     for (const [index, point] of points.entries()) {
+        const bar = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+        bar.setAttribute('x', point.x - 2); bar.setAttribute('y', 240 - (Number(point.item.amount) / peak) * 42);
+        bar.setAttribute('width', 4); bar.setAttribute('height', (Number(point.item.amount) / peak) * 42);
+        bars.append(bar);
         const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
         circle.setAttribute('cx', point.x); circle.setAttribute('cy', point.y);
         circle.setAttribute('r', index === points.length - 1 ? 5 : 3);
         circle.setAttribute('class', index === points.length - 1 ? 'trajectory-point trajectory-latest' : 'trajectory-point');
         const title = document.createElementNS('http://www.w3.org/2000/svg', 'title');
-        title.textContent = `${point.item.symbol} · ${formatMoney(point.item.amount)} · ${date(point.item.createdAt)} · cumulative ${formatMoney(point.cumulative)}`;
+        title.textContent = `${point.item.symbol} · ${formatMoney(point.item.amount)} · ${date(point.item.createdAt)}`;
         circle.append(title); markers.append(circle);
     }
-    chart.setAttribute('aria-label', `${records.length} recorded allocation events, cumulative volume ${formatMoney(volume)}. Not market performance.`);
-    const feed = document.getElementById('trajectoryFeed');
-    feed.innerHTML = records.length ? records.slice(-3).reverse().map(item => `<div class="trajectory-event"><span class="trajectory-event-icon" aria-hidden="true">↗</span><div><strong>${escapeDashboardHTML(item.symbol)}</strong><small>${escapeDashboardHTML(date(item.createdAt))} · ${item.status === 'released' ? 'Released' : 'Allocated'}</small></div><strong>${formatMoney(item.amount)}</strong></div>`).join('') : '<p class="allocation-empty">No allocation activity yet.</p>';
+    chart.setAttribute('aria-label', `${records.length} recorded allocation amounts over time. Total volume ${formatMoney(volume)}. Not market performance.`);
+
 }
 function refreshDashboard() {
     renderRecordedAllocations();

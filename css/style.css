@@ -5148,13 +5148,13 @@ body {
 
 /* Allocation activity terminal */
 .allocation-activity-panel { overflow: hidden; background: radial-gradient(ellipse at 75% 30%, rgba(50,214,160,.07), transparent 65%), #101c2e; }
-.trajectory-summary { display:flex; align-items:center; justify-content:space-between; gap:16px; margin-bottom:24px; }
+.trajectory-summary { display:flex; align-items:center; justify-content:space-between; gap:16px; margin-bottom:12px; }
 .trajectory-summary > div { min-width:0; }
 .trajectory-summary > div > span { display:block; color:#91a1b7; font-size:12px; margin-bottom:8px; }
 .trajectory-summary strong { display:block; font-family:"Manrope",sans-serif; font-size:clamp(22px,2.6vw,36px); letter-spacing:-1px; overflow-wrap:anywhere; }
 .trajectory-status { display:flex; align-items:center; gap:7px; color:#32d6a0; font-size:9px; letter-spacing:1px; white-space:nowrap; }
 .trajectory-status i { width:6px; height:6px; background:#32d6a0; border-radius:50%; box-shadow:0 0 12px #32d6a0; animation:trajectory-pulse 3s ease-in-out infinite; }
-.trajectory-chart { position:relative; padding-left:76px; height:260px; }
+.trajectory-chart { position:relative; padding-left:76px; height:190px; }
 .trajectory-chart svg { display:block; width:100%; height:100%; overflow:visible; }
 .trajectory-axis { position:absolute; inset:12px auto 12px 0; display:flex; flex-direction:column; justify-content:space-between; color:#7b91aa; font-size:10px; font-variant-numeric:tabular-nums; }
 .trajectory-grid path { stroke:rgba(148,163,184,.12); stroke-width:1; fill:none; stroke-dasharray:3 5; }
@@ -5164,28 +5164,26 @@ body {
 .trajectory-latest { fill:#b9ffe6; filter:drop-shadow(0 0 6px #32d6a0); }
 .trajectory-empty { position:absolute; inset:35% 16px auto 88px; text-align:center; color:#91a1b7; font-size:13px; line-height:1.8; }
 .trajectory-empty[hidden] { display:none; }
-.trajectory-dates { display:flex; justify-content:space-between; padding-left:76px; margin:12px 0 24px; font-size:10px; color:#91a1b7; }
-.trajectory-metrics { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); padding:18px 0; border-block:1px solid rgba(148,163,184,.14); gap:16px; }
+.trajectory-dates { display:flex; justify-content:space-between; padding-left:76px; margin:10px 0 14px; font-size:10px; color:#91a1b7; }
+.trajectory-metrics { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); padding:12px 0; border-block:1px solid rgba(148,163,184,.14); gap:16px; }
 .trajectory-metrics span { display:block; font-size:10px; color:#91a1b7; margin-bottom:8px; }
 .trajectory-metrics strong { font-size:14px; font-variant-numeric:tabular-nums; overflow-wrap:anywhere; }
-.trajectory-feed-heading { display:flex; justify-content:space-between; align-items:center; margin:20px 0 8px; font-size:9px; letter-spacing:1.4px; color:#91a1b7; }
-.trajectory-signal { color:#32d6a0; letter-spacing:3px; animation:trajectory-pulse 4s ease-in-out infinite; }
-.trajectory-event { display:flex; align-items:center; gap:12px; padding:12px 0; border-bottom:1px solid rgba(148,163,184,.08); font-size:12px; }
-.trajectory-event-icon { display:grid; place-items:center; width:30px; height:30px; flex-shrink:0; border:1px solid rgba(50,214,160,.18); border-radius:9px; background:rgba(50,214,160,.06); color:#32d6a0; }
-.trajectory-event > div { flex:1; }
-.trajectory-event small { display:block; margin-top:5px; font-size:10px; color:#91a1b7; }
-.trajectory-event > strong { color:#a7f1d7; font-variant-numeric:tabular-nums; }
 .trajectory-caption { margin-top:14px; color:#7b91aa; font-size:10px; line-height:1.7; }
 @keyframes trajectory-flow { to { stroke-dashoffset:-320; } }
 @keyframes trajectory-pulse { 50% { opacity:.4; } }
 @media(max-width:600px) {
     .trajectory-summary { align-items:flex-start; flex-direction:column; }
-    .trajectory-chart { height:210px; padding-left:66px; }
+    .trajectory-chart { height:180px; padding-left:66px; }
     .trajectory-axis { font-size:9px; }
     .trajectory-dates { padding-left:66px; }
     .trajectory-metrics { gap:8px; }
     .trajectory-metrics strong { font-size:12px; }
 }
 @media(prefers-reduced-motion:reduce) {
-    .trajectory-flow, .trajectory-status i, .trajectory-signal { animation:none; }
+    .trajectory-flow, .trajectory-status i, .trajectory-scan { animation:none; }
 }
+
+.trajectory-bars rect { fill:rgba(105,184,255,.4); }
+.trajectory-scan { stroke:rgba(105,184,255,.3); stroke-width:24; filter:blur(8px); animation:trajectory-scan 9s linear infinite; }
+@keyframes trajectory-scan { from { transform:translateX(0); } to { transform:translateX(640px); } }
+@media(prefers-reduced-motion:reduce) { .trajectory-scan { animation:none; display:none; } }
