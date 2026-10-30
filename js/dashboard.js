@@ -207,52 +207,37 @@ function formatMoney(value) {
 ========================================== */
 
 function animatePortfolioValue(targetValue) {
-    const valueElement = document.getElementById("totalPortfolioValue");
-
+    const valueElement = document.getElementById('totalPortfolioValue');
     if (!valueElement) return;
-
-    // Stop any animation that may already be running
-    if (valueElement._counterFrame) {
-        cancelAnimationFrame(valueElement._counterFrame);
-    }
-
     const target = Number(targetValue);
+    if (!Number.isFinite(target)) return;
+    valueElement._counterTarget = target;
 
-    if (!Number.isFinite(target)) {
-        valueElement.textContent = formatMoney(0);
+    // Server refreshes update the value without restarting the recount schedule.
+    if (valueElement._counterStarted) {
+        if (!valueElement._counterFrame) valueElement.textContent = formatMoney(target);
         return;
     }
-
-    const duration = 1800; // Animation duration in milliseconds
-    const startTime = performance.now();
-    const startValue = 0;
-
-    valueElement.textContent = formatMoney(startValue);
-
-    function updateCounter(currentTime) {
-        const elapsed = currentTime - startTime;
-        const progress = Math.min(elapsed / duration, 1);
-
-        // Smooth ease-out effect
-        const easedProgress = 1 - Math.pow(1 - progress, 4);
-
-        const currentValue =
-            startValue + (target - startValue) * easedProgress;
-
-        valueElement.textContent = formatMoney(currentValue);
-
-        if (progress < 1) {
-            valueElement._counterFrame =
-                requestAnimationFrame(updateCounter);
-        } else {
-            // Ensure the final number is exactly correct
-            valueElement.textContent = formatMoney(target);
-            valueElement._counterFrame = null;
+    valueElement._counterStarted = true;
+    function startCount() {
+        const startTime = performance.now();
+        const duration = 1800;
+        valueElement.textContent = formatMoney(0);
+        function updateCounter(currentTime) {
+            const progress = Math.min((currentTime - startTime) / duration, 1);
+            const eased = 1 - Math.pow(1 - progress, 4);
+            valueElement.textContent = formatMoney(valueElement._counterTarget * eased);
+            if (progress < 1) {
+                valueElement._counterFrame = requestAnimationFrame(updateCounter);
+            } else {
+                valueElement.textContent = formatMoney(valueElement._counterTarget);
+                valueElement._counterFrame = null;
+                valueElement._counterTimer = window.setTimeout(startCount, 180000);
+            }
         }
+        valueElement._counterFrame = requestAnimationFrame(updateCounter);
     }
-
-    valueElement._counterFrame =
-        requestAnimationFrame(updateCounter);
+    startCount();
 }
 
 
