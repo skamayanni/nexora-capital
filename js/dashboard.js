@@ -232,7 +232,7 @@ function animatePortfolioValue(targetValue) {
             } else {
                 valueElement.textContent = formatMoney(valueElement._counterTarget);
                 valueElement._counterFrame = null;
-                valueElement._counterTimer = window.setTimeout(startCount, 180000);
+                valueElement._counterTimer = window.setTimeout(startCount, 120000);
             }
         }
         valueElement._counterFrame = requestAnimationFrame(updateCounter);

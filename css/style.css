@@ -5189,7 +5189,7 @@ body {
 @media(prefers-reduced-motion:reduce) { .trajectory-scan { animation:none; display:none; } }
 
 .trajectory-visualizer { padding-left:0; }
-.trajectory-summary .trajectory-title { font-size:clamp(20px,2vw,28px); letter-spacing:-.5px; }
+.trajectory-summary .trajectory-title { font-family:"Manrope",sans-serif; font-size:clamp(18px,1.7vw,23px); font-weight:800; line-height:1.25; letter-spacing:-.8px; text-wrap:balance; }
 .trajectory-visualizer-dates { padding-left:0; letter-spacing:1px; }
 .trajectory-visualizer .trajectory-line { stroke-dasharray:1200; animation:trajectory-draw 6s ease-in-out infinite; }
 .trajectory-visualizer .trajectory-bars rect, .trajectory-beacon { animation:trajectory-pulse 3s ease-in-out infinite; }
