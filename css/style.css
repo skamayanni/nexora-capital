@@ -5187,3 +5187,13 @@ body {
 .trajectory-scan { stroke:rgba(105,184,255,.3); stroke-width:24; filter:blur(8px); animation:trajectory-scan 9s linear infinite; }
 @keyframes trajectory-scan { from { transform:translateX(0); } to { transform:translateX(640px); } }
 @media(prefers-reduced-motion:reduce) { .trajectory-scan { animation:none; display:none; } }
+
+.trajectory-visualizer { padding-left:0; }
+.trajectory-summary .trajectory-title { font-size:clamp(20px,2vw,28px); letter-spacing:-.5px; }
+.trajectory-visualizer-dates { padding-left:0; letter-spacing:1px; }
+.trajectory-visualizer .trajectory-line { stroke-dasharray:1200; animation:trajectory-draw 6s ease-in-out infinite; }
+.trajectory-visualizer .trajectory-bars rect, .trajectory-beacon { animation:trajectory-pulse 3s ease-in-out infinite; }
+@keyframes trajectory-draw { 0% { stroke-dashoffset:1200; } 65%,100% { stroke-dashoffset:0; } }
+@media(prefers-reduced-motion:reduce) {
+    .trajectory-visualizer .trajectory-line, .trajectory-visualizer .trajectory-bars rect, .trajectory-beacon { animation:none; }
+}

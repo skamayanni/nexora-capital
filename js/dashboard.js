@@ -1141,54 +1141,33 @@ function renderPortfolioInsights() {
 // =======================================================
 
 function renderRecordedAllocations() {
+    // Decorative visualizer: these coordinates never represent account values.
     const chart = document.getElementById('allocationActivityChart');
     if (!chart) return;
-    const records = dashboardRecordedAllocations.filter(item => Number(item.amount) > 0 && Number.isFinite(Date.parse(item.createdAt)))
-        .slice().sort((a, b) => Date.parse(a.createdAt) - Date.parse(b.createdAt));
-    const totalCents = records.reduce((sum, item) => sum + Math.round(Number(item.amount) * 100), 0);
-    const volume = totalCents / 100;
-    const set = (id, value) => { const node = document.getElementById(id); if (node) node.textContent = value; };
-    set('trajectoryVolume', formatMoney(volume));
-    set('trajectoryActive', formatMoney(Number(dashboardPortfolio.allocatedBalance) || 0));
-    set('trajectoryCount', records.length);
-    set('trajectoryAssets', new Set(records.map(item => item.symbol)).size);
-    const peak = records.reduce((max, item) => Math.max(max, Number(item.amount)), 0);
-    set('trajectoryMax', formatMoney(peak));
-    set('trajectoryMid', formatMoney(peak / 2));
-    const date = value => new Date(value).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
-    set('trajectoryStart', records.length ? date(records[0].createdAt) : '—');
-    set('trajectoryEnd', records.length ? date(records.at(-1).createdAt) : '—');
-    const empty = document.getElementById('trajectoryEmpty');
-    if (empty) empty.hidden = records.length > 0;
-    const firstTime = records.length ? Date.parse(records[0].createdAt) : 0;
-    const span = records.length ? Date.parse(records.at(-1).createdAt) - firstTime : 0;
-    const points = records.map((item, index) => {
-        const x = span > 0 ? 24 + ((Date.parse(item.createdAt) - firstTime) / span) * 592 : 24 + ((index + 1) / records.length) * 592;
-        return { x, y: 240 - (Number(item.amount) / peak) * 220, item };
-    });
-    const line = points.map((point, index) => `${index ? 'L' : 'M'}${point.x.toFixed(2)} ${point.y.toFixed(2)}`).join(' ');
+    const levels = [230, 214, 226, 194, 207, 177, 190, 164, 183, 146, 158, 127, 146, 111, 125, 91, 107, 77, 96, 61, 78, 43, 59, 24];
+    const points = levels.map((y, index) => ({ x: 8 + index * 624 / (levels.length - 1), y }));
+    const line = points.map((point, index) => `${index ? 'L' : 'M'}${point.x.toFixed(2)} ${point.y}`).join(' ');
     document.getElementById('trajectoryLine').setAttribute('d', line);
     document.getElementById('trajectoryFlow').setAttribute('d', line);
-    document.getElementById('trajectoryArea').setAttribute('d', points.length ? `${line} L${points.at(-1).x} 260 L${points[0].x} 260 Z` : '');
+    document.getElementById('trajectoryArea').setAttribute('d', `${line} L632 260 L8 260 Z`);
     const markers = document.getElementById('trajectoryMarkers');
-    markers.replaceChildren();
     const bars = document.getElementById('trajectoryBars');
-    bars.replaceChildren();
+    markers.replaceChildren(); bars.replaceChildren();
     for (const [index, point] of points.entries()) {
         const bar = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
-        bar.setAttribute('x', point.x - 2); bar.setAttribute('y', 240 - (Number(point.item.amount) / peak) * 42);
-        bar.setAttribute('width', 4); bar.setAttribute('height', (Number(point.item.amount) / peak) * 42);
+        const height = 8 + (index * 13 % 35);
+        bar.setAttribute('x', point.x - 2); bar.setAttribute('y', 250 - height);
+        bar.setAttribute('width', 4); bar.setAttribute('height', height);
+        bar.style.animationDelay = `${index * -0.2}s`;
         bars.append(bar);
+        if (index % 3 !== 0 && index !== points.length - 1) continue;
         const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
         circle.setAttribute('cx', point.x); circle.setAttribute('cy', point.y);
         circle.setAttribute('r', index === points.length - 1 ? 5 : 3);
-        circle.setAttribute('class', index === points.length - 1 ? 'trajectory-point trajectory-latest' : 'trajectory-point');
-        const title = document.createElementNS('http://www.w3.org/2000/svg', 'title');
-        title.textContent = `${point.item.symbol} · ${formatMoney(point.item.amount)} · ${date(point.item.createdAt)}`;
-        circle.append(title); markers.append(circle);
+        circle.setAttribute('class', 'trajectory-point trajectory-beacon');
+        circle.style.animationDelay = `${index * -0.3}s`;
+        markers.append(circle);
     }
-    chart.setAttribute('aria-label', `${records.length} recorded allocation amounts over time. Total volume ${formatMoney(volume)}. Not market performance.`);
-
 }
 function refreshDashboard() {
     renderRecordedAllocations();
